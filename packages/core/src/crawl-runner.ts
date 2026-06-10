@@ -41,9 +41,11 @@ import {
 import { isExcludedCrawlUrl } from "./url-exclusions";
 import { noopLogger, type Logger } from "./logger";
 
-// Defaults for the four runtime knobs, copied verbatim from Ladan's zod
-// config defaults at extraction time. Callers override per run.
+// Defaults for the four runtime knobs. Callers override per run.
 const DEFAULT_PAGE_CONCURRENCY = 1;
+// Cadence of the info-level "crawl progress" log. Rate-limited crawls are
+// otherwise silent between Crawlee's 60 s statistics blocks.
+const PROGRESS_LOG_EVERY_PAGES = 5;
 const DEFAULT_MEMORY_MBYTES = 1024;
 const DEFAULT_REQUEST_HANDLER_TIMEOUT_SECS = 15 * 60;
 const DEFAULT_MAX_HTML_BYTES = 8 * 1024 * 1024;
@@ -312,6 +314,7 @@ export async function runCrawl(input: CrawlRunnerInput): Promise<CrawlOutcome> {
   const notifiedSkippedRobotsUrls = new Set<string>();
   const skipUrls = input.skipUrls;
   const logger = input.logger ?? noopLogger;
+  const log = logger.child({ component: "crawl-runner" });
   const maxHtmlBytes = input.maxHtmlBytes ?? DEFAULT_MAX_HTML_BYTES;
   const robots =
     input.crawlType === "crawl" || input.crawlType === "sitemap"
@@ -358,13 +361,34 @@ export async function runCrawl(input: CrawlRunnerInput): Promise<CrawlOutcome> {
     : null;
 
   const cacheHints = input.cacheHints;
-  const log = logger.child({ component: "crawl-runner" });
   const crawlFullPath = input.crawlType === "crawl" && input.crawlScope === "path_prefix";
+
+  // Heartbeat between Crawlee's 60 s statistics blocks: one line per
+  // PROGRESS_LOG_EVERY_PAGES handled pages (fresh or 304-unchanged).
+  let handledPages = 0;
+  function noteProgress(url: string): void {
+    handledPages += 1;
+    if (handledPages % PROGRESS_LOG_EVERY_PAGES !== 0) return;
+    log.info(
+      {
+        pages: okCount,
+        unchanged: unchangedCount,
+        failed: failedCount,
+        skippedRobots: skippedRobotsCount,
+        skippedUnavailable,
+        skippedNonHtml: skippedByContentType,
+        skippedKnown: skippedCount,
+        lastUrl: url,
+      },
+      "crawl progress",
+    );
+  }
 
   function noteSkippedRobots(url: string): void {
     if (skippedRobotsUrls.has(url)) return;
     skippedRobotsUrls.add(url);
     skippedRobotsCount += 1;
+    log.debug({ url }, "skipping url: disallowed by robots.txt");
   }
 
   async function notifySkippedRobots(url: string): Promise<void> {
@@ -469,8 +493,10 @@ export async function runCrawl(input: CrawlRunnerInput): Promise<CrawlOutcome> {
           if (!isSkipped) {
             unchangedCount += 1;
             await input.onUnchanged?.({ url });
+            noteProgress(url);
           } else {
             skippedCount += 1;
+            log.debug({ url }, "skipping url: listed in skip_urls (already processed)");
           }
           return;
         }
@@ -479,6 +505,7 @@ export async function runCrawl(input: CrawlRunnerInput): Promise<CrawlOutcome> {
         const mimeType = inferResponseMimeType(url, responseHeaders["content-type"]);
         if (!DOCUMENT_MIME_TYPES.has(mimeType)) {
           skippedByContentType += 1;
+          log.debug({ url, mimeType }, "skipping url: non-document content-type");
           return;
         }
 
@@ -507,6 +534,7 @@ export async function runCrawl(input: CrawlRunnerInput): Promise<CrawlOutcome> {
 
         if (isSkipped) {
           skippedCount += 1;
+          log.debug({ url }, "skipping url: listed in skip_urls (already processed)");
           return;
         }
 
@@ -560,6 +588,7 @@ export async function runCrawl(input: CrawlRunnerInput): Promise<CrawlOutcome> {
           extraChunks: enrichment.extraChunks.length > 0 ? enrichment.extraChunks : undefined,
           detectedPlatforms: detectedPlatforms.length > 0 ? detectedPlatforms : undefined,
         });
+        noteProgress(url);
       },
       // Fires BEFORE each retry (while retries remain). On a 429/503 we honor
       // `Retry-After` and pause before Crawlee re-queues the request, so a
@@ -599,6 +628,7 @@ export async function runCrawl(input: CrawlRunnerInput): Promise<CrawlOutcome> {
         const url = request.loadedUrl ?? request.url;
         if (skipUrls?.has(url)) {
           skippedCount += 1;
+          log.debug({ url }, "skipping url: listed in skip_urls (already processed)");
           return;
         }
         const errorMessage = error instanceof Error ? error.message : String(error);
@@ -611,6 +641,7 @@ export async function runCrawl(input: CrawlRunnerInput): Promise<CrawlOutcome> {
         // content-type abort it would otherwise be miscounted as.
         if (httpStatus !== undefined && NON_RETRYABLE_STATUSES.has(httpStatus)) {
           skippedUnavailable += 1;
+          log.info({ url, httpStatus }, "skipping url: unavailable (auth-gated or gone)");
           await input.onSkippedUnavailable?.({ url, httpStatus });
           return;
         }
@@ -620,6 +651,7 @@ export async function runCrawl(input: CrawlRunnerInput): Promise<CrawlOutcome> {
         // like `.srt`); they're sitemap noise, not coverage failures.
         if (NON_HTML_MIME_ERROR.test(errorMessage)) {
           skippedByContentType += 1;
+          log.debug({ url }, "skipping url: non-document content-type");
           return;
         }
         const cls = classifyError(error, httpStatus);
