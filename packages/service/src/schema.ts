@@ -26,18 +26,38 @@ const ConditionalGetSchema = z.object({
   last_modified: z.string().nullish(),
 });
 
+const WebhookTargetSchema = z.object({
+  url: z.url(),
+  /** HMAC-SHA256 key for the X-Kravla-Signature header on every callback. */
+  secret: z.string().min(16, "webhook secret must be at least 16 characters"),
+  batch_size: z.number().int().min(1).max(500).default(25),
+  /** Label echoed in job status; defaults to `target-<index>`. */
+  name: z.string().min(1).max(64).optional(),
+});
+
+export const MAX_WEBHOOK_TARGETS = 5;
+
+// The webhook branch accepts either `targets` (fan-out, 1-5 receivers) or the
+// legacy flat single-target fields from the alpha API — never both. The
+// normalization to `{mode, targets}` happens in the top-level transform below
+// (zod discriminated unions don't admit transformed members).
 const DeliverySchema = z.discriminatedUnion("mode", [
   z.object({ mode: z.literal("stream") }),
   z.object({
     mode: z.literal("webhook"),
-    url: z.url(),
-    /** HMAC-SHA256 key for the X-Kravla-Signature header on every callback. */
-    secret: z.string().min(16, "webhook secret must be at least 16 characters"),
-    batch_size: z.number().int().min(1).max(500).default(25),
+    targets: z.array(WebhookTargetSchema).min(1).max(MAX_WEBHOOK_TARGETS).optional(),
+    /** @deprecated legacy single-target shape — use `targets`. */
+    url: z.url().optional(),
+    secret: z.string().min(16, "webhook secret must be at least 16 characters").optional(),
+    batch_size: z.number().int().min(1).max(500).optional(),
   }),
 ]);
 
-export const CrawlRequestSchema = z.object({
+/** A webhook target after normalization — `name` is always set. */
+export type WebhookTarget = Omit<z.infer<typeof WebhookTargetSchema>, "name"> & { name: string };
+export type Delivery = { mode: "stream" } | { mode: "webhook"; targets: WebhookTarget[] };
+
+const RawCrawlRequestSchema = z.object({
   url: z.url(),
   crawl_type: z.enum(["crawl", "sitemap", "feed", "open_eplatform"]).default("crawl"),
   depth: z.number().int().min(0).max(10).default(1),
@@ -52,8 +72,34 @@ export const CrawlRequestSchema = z.object({
   delivery: DeliverySchema.default({ mode: "stream" }),
 });
 
-export type CrawlRequest = z.infer<typeof CrawlRequestSchema>;
-export type WebhookDelivery = Extract<CrawlRequest["delivery"], { mode: "webhook" }>;
+export type CrawlRequest = Omit<z.infer<typeof RawCrawlRequestSchema>, "delivery"> & {
+  delivery: Delivery;
+};
+export type WebhookDelivery = Extract<Delivery, { mode: "webhook" }>;
+
+export const CrawlRequestSchema = RawCrawlRequestSchema.superRefine((req, ctx) => {
+  if (req.delivery.mode !== "webhook") return;
+  const d = req.delivery;
+  if (d.targets && (d.url !== undefined || d.secret !== undefined || d.batch_size !== undefined)) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["delivery"],
+      message: "specify either delivery.targets or the legacy url/secret fields, not both",
+    });
+  } else if (!d.targets && !(d.url && d.secret)) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["delivery"],
+      message: "webhook delivery requires targets (or the legacy url + secret fields)",
+    });
+  }
+}).transform((req): CrawlRequest => {
+  if (req.delivery.mode !== "webhook") return { ...req, delivery: { mode: "stream" } };
+  const d = req.delivery;
+  const raw = d.targets ?? [{ url: d.url!, secret: d.secret!, batch_size: d.batch_size ?? 25 }];
+  const targets = raw.map((t, i) => ({ ...t, name: t.name ?? `target-${i}` }));
+  return { ...req, delivery: { mode: "webhook", targets } };
+});
 
 export const PreviewRequestSchema = z.object({
   url: z.url(),

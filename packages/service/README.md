@@ -73,20 +73,41 @@ Cancel by dropping the connection — the crawl aborts within a page.
 
 ### Webhook delivery
 
+One crawl can fan out to up to 5 receivers — e.g. an Eneo worker AND a Ladan instance get the
+same crawl without the site being crawled twice:
+
 ```jsonc
-"delivery": { "mode": "webhook", "url": "https://consumer/hook", "secret": "…≥16 chars…", "batch_size": 25 }
+"delivery": {
+  "mode": "webhook",
+  "targets": [
+    { "url": "https://eneo.example/hook",  "secret": "…≥16 chars…", "batch_size": 25, "name": "eneo" },
+    { "url": "https://ladan.example/hook", "secret": "…another…",   "name": "ladan" }
+  ]
+}
 ```
 
-Returns `202 {"job_id": "<uuid>"}` immediately. Events are POSTed to the callback in batches:
+(The legacy flat shape `{ "mode": "webhook", "url", "secret", "batch_size" }` still works as a
+single target — deprecated, removed at beta.)
+
+Returns `202 {"job_id": "<uuid>"}` immediately. Events are POSTed to each target in batches:
 
 ```jsonc
 { "job_id": "…", "sequence": 3, "events": [ … ], "done": { … } } // "done" only on the final POST
 ```
 
 Headers: `X-Kravla-Signature: sha256=<hex HMAC-SHA256 of the raw body>`, `X-Kravla-Job-Id`,
-`X-Kravla-Sequence`. Delivery is sequential and awaited by the crawler, so a slow receiver
-backpressures the crawl; failed deliveries retry 3× then fail the job. Webhook URLs must not
-resolve to private addresses unless `KRAVLA_WEBHOOK_ALLOW_PRIVATE=true`.
+`X-Kravla-Sequence`. Every target receives the identical event stream with its own gapless
+1..n sequence (batch boundaries differ when `batch_size` does). Delivery is awaited by the
+crawler, so the slowest healthy receiver backpressures the crawl. A target whose delivery
+exhausts retries (3×) is marked failed and excluded from the rest of the job — the crawl and
+the other targets continue; when every target has failed, the crawl itself is aborted (nobody
+is listening). Webhook URLs must not resolve to private addresses unless
+`KRAVLA_WEBHOOK_ALLOW_PRIVATE=true`.
+
+Receivers MUST tolerate `unchanged` events: when the submitter supplies `conditional_gets`,
+pages answering 304 carry no body for ANY receiver. 304 means nothing changed, so no receiver
+misses updates — but a secondary receiver that tracks per-document freshness should treat
+`unchanged` as a "still exists" touch.
 
 Verify in Python (e.g. from Eneo):
 
@@ -98,8 +119,13 @@ def verify(secret: str, raw_body: bytes, signature_header: str) -> bool:
     return hmac.compare_digest(expected, signature_header)
 ```
 
-- `GET /v1/crawls/{job_id}` → `{job_id, status: running|completed|cancelled|failed, created_at, finished_at, delivered_batches, outcome, error}`
-- `DELETE /v1/crawls/{job_id}` → `202`, aborts the crawl; the final webhook POST reports `status: "cancelled"`.
+- `GET /v1/crawls/{job_id}` → `{job_id, status, created_at, finished_at, delivered_batches, targets, outcome, error}` where
+  `status` ∈ `running|completed|partial|cancelled|failed` (`partial` = crawl finished but only a
+  subset of targets got it) and `targets[]` carries per-receiver
+  `{name, url, status: delivering|delivered|failed, delivered_batches, error}`.
+- `DELETE /v1/crawls/{job_id}` → `202`, aborts the crawl; the final webhook POST to every
+  still-healthy target reports `status: "cancelled"`. Cancellation is job-wide — detaching a
+  single target is a non-goal (the submitter owns the job).
 
 ## POST /v1/preview
 

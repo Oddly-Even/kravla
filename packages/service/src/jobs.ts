@@ -9,7 +9,17 @@
 import { randomUUID } from "node:crypto";
 import type { DoneEvent } from "./wire";
 
-export type JobStatus = "running" | "completed" | "cancelled" | "failed";
+/** `partial` = the crawl completed but only a subset of delivery targets got it. */
+export type JobStatus = "running" | "completed" | "partial" | "cancelled" | "failed";
+
+/** Reportable per-receiver delivery state (buffers/sequences live in app.ts). */
+export type JobTargetState = {
+  name: string;
+  url: string;
+  status: "delivering" | "delivered" | "failed";
+  deliveredBatches: number;
+  error: string | null;
+};
 
 export type Job = {
   id: string;
@@ -21,7 +31,7 @@ export type Job = {
   done: DoneEvent | null;
   /** Failure detail when status === "failed" (crawl threw or delivery exhausted retries). */
   error: string | null;
-  deliveredBatches: number;
+  targets: JobTargetState[];
 };
 
 const FINISHED_JOB_TTL_MS = 60 * 60 * 1000;
@@ -45,7 +55,7 @@ export class JobRegistry {
     return this.activeCount;
   }
 
-  create(): Job {
+  create(targets: { name: string; url: string }[]): Job {
     const job: Job = {
       id: randomUUID(),
       status: "running",
@@ -54,7 +64,13 @@ export class JobRegistry {
       finishedAt: null,
       done: null,
       error: null,
-      deliveredBatches: 0,
+      targets: targets.map((t) => ({
+        name: t.name,
+        url: t.url,
+        status: "delivering",
+        deliveredBatches: 0,
+        error: null,
+      })),
     };
     this.jobs.set(job.id, job);
     return job;

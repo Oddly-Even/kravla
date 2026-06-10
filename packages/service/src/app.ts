@@ -16,12 +16,13 @@ import { previewCrawlSource, type Logger } from "@oddly-even/kravla";
 import type { ZodType } from "zod";
 import type { ServiceConfig } from "./config";
 import { runCrawlJob } from "./dispatch";
-import { JobRegistry, type Job } from "./jobs";
+import { JobRegistry, type Job, type JobTargetState } from "./jobs";
 import {
   CrawlRequestSchema,
   PreviewRequestSchema,
   type CrawlRequest,
   type WebhookDelivery,
+  type WebhookTarget,
 } from "./schema";
 import { assertSafeWebhookUrl, deliverWebhook } from "./webhook";
 import { previewToWire, type CrawlEvent, type DoneEvent } from "./wire";
@@ -88,10 +89,13 @@ export function createApp(config: ServiceConfig, logger: Logger): App {
     const request = parseBody(CrawlRequestSchema, await readJsonBody(req));
 
     if (request.delivery.mode === "webhook") {
-      try {
-        await assertSafeWebhookUrl(request.delivery.url, config.webhookAllowPrivate);
-      } catch (err) {
-        throw new HttpError(400, err instanceof Error ? err.message : String(err));
+      for (const target of request.delivery.targets) {
+        try {
+          await assertSafeWebhookUrl(target.url, config.webhookAllowPrivate);
+        } catch (err) {
+          const message = err instanceof Error ? err.message : String(err);
+          throw new HttpError(400, `delivery target ${target.name}: ${message}`);
+        }
       }
     }
 
@@ -159,7 +163,7 @@ export function createApp(config: ServiceConfig, logger: Logger): App {
     delivery: WebhookDelivery,
     res: ServerResponse,
   ): void {
-    const job = registry.create();
+    const job = registry.create(delivery.targets.map((t) => ({ name: t.name, url: t.url })));
     const log = logger.child({
       mode: "webhook",
       jobId: job.id,
@@ -173,37 +177,70 @@ export function createApp(config: ServiceConfig, logger: Logger): App {
     sendJson(res, 202, { job_id: job.id });
   }
 
+  /** Per-target delivery runtime — buffers/sequences stay out of the registry. */
+  type TargetRun = {
+    target: WebhookTarget;
+    state: JobTargetState;
+    buffer: CrawlEvent[];
+    sequence: number;
+  };
+
   async function runWebhookJob(
     job: Job,
     request: CrawlRequest,
     delivery: WebhookDelivery,
     log: Logger,
   ): Promise<void> {
-    let batch: CrawlEvent[] = [];
-    let sequence = 0;
+    const runs: TargetRun[] = delivery.targets.map((target, i) => ({
+      target,
+      state: job.targets[i]!,
+      buffer: [],
+      sequence: 0,
+    }));
+    let allTargetsFailed = false;
 
-    const flush = async (done?: DoneEvent) => {
-      if (batch.length === 0 && !done) return;
-      sequence += 1;
+    // One signed POST to one target. A target that exhausts its retry budget
+    // goes terminally `failed` and is excluded from every later flush — the
+    // crawl and the surviving targets continue. Each receiver sees its own
+    // gapless 1..n sequence (batch boundaries differ when batch_sizes do).
+    const flushTarget = async (run: TargetRun, done?: DoneEvent): Promise<void> => {
+      if (run.state.status === "failed") return;
+      if (run.buffer.length === 0 && !done) return;
+      run.sequence += 1;
       const body = JSON.stringify({
         job_id: job.id,
-        sequence,
-        events: batch,
+        sequence: run.sequence,
+        events: run.buffer,
         ...(done ? { done } : {}),
       });
-      batch = [];
-      await deliverWebhook({
-        url: delivery.url,
-        secret: delivery.secret,
-        jobId: job.id,
-        sequence,
-        body,
-        logger: log,
-      });
-      job.deliveredBatches = sequence;
+      run.buffer = [];
+      try {
+        await deliverWebhook({
+          url: run.target.url,
+          secret: run.target.secret,
+          jobId: job.id,
+          sequence: run.sequence,
+          body,
+          logger: log,
+        });
+        run.state.deliveredBatches = run.sequence;
+        if (done) run.state.status = "delivered";
+      } catch (err) {
+        run.state.status = "failed";
+        run.state.error = err instanceof Error ? err.message : String(err);
+        log.warn(
+          { target: run.state.name, err: run.state.error },
+          "delivery target failed; excluded from remaining flushes",
+        );
+        if (runs.every((r) => r.state.status === "failed")) {
+          // Nobody is listening — stop hitting the crawled site.
+          allTargetsFailed = true;
+          job.controller.abort();
+        }
+      }
     };
 
-    log.info({}, "crawl started");
+    log.info({ targets: runs.map((r) => r.state.name) }, "crawl started");
     try {
       const { done } = await runCrawlJob({
         request,
@@ -211,33 +248,69 @@ export function createApp(config: ServiceConfig, logger: Logger): App {
         logger: log,
         signal: job.controller.signal,
         onEvent: async (event) => {
-          batch.push(event);
-          // Awaited by the crawler — a slow receiver backpressures the crawl.
-          if (batch.length >= delivery.batch_size) await flush();
+          const due: Promise<void>[] = [];
+          for (const run of runs) {
+            if (run.state.status === "failed") continue;
+            run.buffer.push(event);
+            if (run.buffer.length >= run.target.batch_size) due.push(flushTarget(run));
+          }
+          // Awaited by the crawler — the slowest active receiver backpressures
+          // the crawl. In-flight memory is bounded by the sum of batch_sizes.
+          if (due.length > 0) await Promise.all(due);
         },
       });
-      await flush(done);
-      registry.finish(job, done.status === "cancelled" ? "cancelled" : "completed", done);
-      log.info({ status: job.status, batches: sequence }, "crawl finished");
+      await Promise.all(runs.map((run) => flushTarget(run, done)));
+
+      const deliveredCount = runs.filter((r) => r.state.status === "delivered").length;
+      if (allTargetsFailed || deliveredCount === 0) {
+        registry.finish(job, "failed", done, "all delivery targets failed");
+      } else if (done.status === "cancelled") {
+        registry.finish(job, "cancelled", done);
+      } else if (deliveredCount === runs.length) {
+        registry.finish(job, "completed", done);
+      } else {
+        registry.finish(
+          job,
+          "partial",
+          done,
+          `${runs.length - deliveredCount} of ${runs.length} delivery targets failed`,
+        );
+      }
+      log.info({ status: job.status }, "crawl finished");
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       registry.finish(job, "failed", null, message);
       log.error({ err: message }, "crawl failed");
-      // Best-effort failure notice; if delivery itself is what broke, this
-      // may fail too — status stays queryable via GET /v1/crawls/{id}.
-      await flush({ type: "done", status: "failed", outcome: null, error: message }).catch(
-        () => {},
-      );
+      // Best-effort failure notice to the targets still listening; status
+      // stays queryable via GET /v1/crawls/{id} either way.
+      const failureDone: DoneEvent = {
+        type: "done",
+        status: "failed",
+        outcome: null,
+        error: message,
+      };
+      await Promise.all(runs.map((run) => flushTarget(run, failureDone).catch(() => {})));
     }
   }
 
   function jobStatusBody(job: Job) {
+    const nonFailed = job.targets.filter((t) => t.status !== "failed");
     return {
       job_id: job.id,
       status: job.status,
       created_at: job.createdAt.toISOString(),
       finished_at: job.finishedAt?.toISOString() ?? null,
-      delivered_batches: job.deliveredBatches,
+      // Back-compat aggregate: batches every still-healthy receiver has.
+      delivered_batches: nonFailed.length
+        ? Math.min(...nonFailed.map((t) => t.deliveredBatches))
+        : 0,
+      targets: job.targets.map((t) => ({
+        name: t.name,
+        url: t.url,
+        status: t.status,
+        delivered_batches: t.deliveredBatches,
+        error: t.error,
+      })),
       outcome: job.done?.outcome ?? null,
       error: job.error,
     };

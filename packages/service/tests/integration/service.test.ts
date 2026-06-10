@@ -169,7 +169,14 @@ describe("stream mode", () => {
 describe("webhook mode", () => {
   type Received = { body: string; signature: string | undefined; sequence: string | undefined };
 
-  async function startReceiver(): Promise<{
+  async function startReceiver(
+    // 400 = deterministic failure (deliverWebhook treats non-408/429 4xx as
+    // non-retryable, so failing targets fail fast in tests). delayMs holds the
+    // response open — since delivery is awaited by the crawler, this pauses
+    // the whole crawl (deterministic mid-run window for e.g. cancellation).
+    respondStatus = 200,
+    delayMs = 0,
+  ): Promise<{
     url: string;
     received: Received[];
     close: () => Promise<void>;
@@ -184,8 +191,10 @@ describe("webhook mode", () => {
           signature: req.headers["x-kravla-signature"] as string | undefined,
           sequence: req.headers["x-kravla-sequence"] as string | undefined,
         });
-        res.writeHead(200);
-        res.end();
+        setTimeout(() => {
+          res.writeHead(respondStatus);
+          res.end();
+        }, delayMs);
       });
     });
     await new Promise<void>((resolve) => server.listen(0, resolve));
@@ -196,6 +205,29 @@ describe("webhook mode", () => {
       close: () =>
         new Promise((resolve, reject) => server.close((e) => (e ? reject(e) : resolve()))),
     };
+  }
+
+  type JobStatusBody = {
+    status: string;
+    outcome: { ok_count: number } | null;
+    error: string | null;
+    delivered_batches: number;
+    targets: { name: string; status: string; delivered_batches: number; error: string | null }[];
+  };
+
+  async function pollUntilSettled(jobId: string): Promise<JobStatusBody> {
+    let status: JobStatusBody | null = null;
+    for (let i = 0; i < 150; i++) {
+      const res = await fetch(`${service.url}/v1/crawls/${jobId}`, { headers: authHeaders });
+      status = (await res.json()) as JobStatusBody;
+      if (status.status !== "running") return status;
+      await new Promise((r) => setTimeout(r, 100));
+    }
+    throw new Error(`job ${jobId} did not settle; last status ${status?.status}`);
+  }
+
+  function eventsOf(received: Received[]): { type: string }[] {
+    return received.flatMap((r) => (JSON.parse(r.body) as { events: { type: string }[] }).events);
   }
 
   it("delivers signed batches, completes, and reports status", async () => {
@@ -267,6 +299,192 @@ describe("webhook mode", () => {
     } finally {
       await guarded.close();
     }
+  });
+
+  describe("fan-out", () => {
+    const secretA = "fan-out-secret-aaaaaa";
+    const secretB = "fan-out-secret-bbbbbb";
+
+    function submitFanOut(targets: object[], extra: object = {}) {
+      return fetch(`${service.url}/v1/crawls`, {
+        method: "POST",
+        headers: authHeaders,
+        body: JSON.stringify({
+          url: fixtures.url,
+          crawl_type: "crawl",
+          depth: 1,
+          delivery: { mode: "webhook", targets },
+          ...extra,
+        }),
+      });
+    }
+
+    it("delivers the same event stream to every target with independent sequences", async () => {
+      const a = await startReceiver();
+      const b = await startReceiver();
+      try {
+        const submit = await submitFanOut([
+          { url: a.url, secret: secretA, batch_size: 1, name: "eneo" },
+          { url: b.url, secret: secretB, batch_size: 50, name: "ladan" },
+        ]);
+        expect(submit.status).toBe(202);
+        const { job_id } = (await submit.json()) as { job_id: string };
+
+        const status = await pollUntilSettled(job_id);
+        expect(status.status).toBe("completed");
+        expect(status.targets.map((t) => [t.name, t.status])).toEqual([
+          ["eneo", "delivered"],
+          ["ladan", "delivered"],
+        ]);
+
+        // Same events on both sides: robots + 3 pages (+ done flag on last POST).
+        for (const recv of [a, b]) {
+          expect(eventsOf(recv.received).filter((e) => e.type === "page").length).toBe(3);
+          const last = JSON.parse(recv.received.at(-1)!.body) as { done?: { status: string } };
+          expect(last.done?.status).toBe("completed");
+        }
+        // batch_size 1 → one POST per event (+ final); batch_size 50 → one POST.
+        expect(a.received.length).toBeGreaterThanOrEqual(4);
+        expect(b.received.length).toBe(1);
+
+        // Per-target gapless sequences and per-target secrets.
+        const sequencesA = a.received.map((r) => Number(r.sequence));
+        expect(sequencesA).toEqual(sequencesA.map((_, i) => i + 1));
+        for (const r of a.received) expect(r.signature).toBe(signBody(secretA, r.body));
+        for (const r of b.received) expect(r.signature).toBe(signBody(secretB, r.body));
+      } finally {
+        await a.close();
+        await b.close();
+      }
+    });
+
+    it("continues for healthy targets when one fails, settling as partial", async () => {
+      const healthy = await startReceiver();
+      const broken = await startReceiver(400);
+      try {
+        const submit = await submitFanOut([
+          { url: healthy.url, secret: secretA, batch_size: 1, name: "good" },
+          { url: broken.url, secret: secretB, batch_size: 1, name: "bad" },
+        ]);
+        const { job_id } = (await submit.json()) as { job_id: string };
+
+        const status = await pollUntilSettled(job_id);
+        expect(status.status).toBe("partial");
+        expect(status.error).toContain("1 of 2");
+        expect(status.outcome?.ok_count).toBe(3);
+
+        const bad = status.targets.find((t) => t.name === "bad")!;
+        expect(bad.status).toBe("failed");
+        expect(bad.error).toContain("HTTP 400");
+
+        const good = status.targets.find((t) => t.name === "good")!;
+        expect(good.status).toBe("delivered");
+        expect(eventsOf(healthy.received).filter((e) => e.type === "page").length).toBe(3);
+      } finally {
+        await healthy.close();
+        await broken.close();
+      }
+    });
+
+    it("aborts the crawl and fails the job when every target fails", async () => {
+      const brokenA = await startReceiver(400);
+      const brokenB = await startReceiver(400);
+      try {
+        const submit = await submitFanOut([
+          { url: brokenA.url, secret: secretA, batch_size: 1 },
+          { url: brokenB.url, secret: secretB, batch_size: 1 },
+        ]);
+        const { job_id } = (await submit.json()) as { job_id: string };
+
+        const status = await pollUntilSettled(job_id);
+        expect(status.status).toBe("failed");
+        expect(status.error).toBe("all delivery targets failed");
+        // Both targets got exactly the one POST that failed them.
+        expect(brokenA.received.length).toBe(1);
+        expect(brokenB.received.length).toBe(1);
+      } finally {
+        await brokenA.close();
+        await brokenB.close();
+      }
+    });
+
+    it("rejects mixing targets with the legacy flat fields", async () => {
+      const res = await fetch(`${service.url}/v1/crawls`, {
+        method: "POST",
+        headers: authHeaders,
+        body: JSON.stringify({
+          url: fixtures.url,
+          delivery: {
+            mode: "webhook",
+            url: "https://example.com/hook",
+            secret: "super-secret-webhook-key",
+            targets: [{ url: "https://example.com/hook2", secret: "super-secret-webhook-key" }],
+          },
+        }),
+      });
+      expect(res.status).toBe(400);
+    });
+
+    it("names the offending target when SSRF-refusing a fan-out submission", async () => {
+      const guarded = await startService(makeConfig({ webhookAllowPrivate: false }));
+      try {
+        const res = await fetch(`${guarded.url}/v1/crawls`, {
+          method: "POST",
+          headers: authHeaders,
+          body: JSON.stringify({
+            url: fixtures.url,
+            delivery: {
+              mode: "webhook",
+              targets: [
+                { url: "https://example.com/hook", secret: secretA },
+                { url: "http://127.0.0.1:9999/hook", secret: secretB, name: "internal" },
+              ],
+            },
+          }),
+        });
+        expect(res.status).toBe(400);
+        const body = (await res.json()) as { error: string };
+        expect(body.error).toContain("internal");
+        expect(body.error).toContain("private");
+      } finally {
+        await guarded.close();
+      }
+    });
+
+    it("delivers done:cancelled to every target when the job is cancelled", async () => {
+      // Receiver a answers each POST only after 3s — the awaited delivery
+      // pins the crawl mid-run, so the DELETE below deterministically lands
+      // while the job is still running.
+      const a = await startReceiver(200, 3_000);
+      const b = await startReceiver();
+      try {
+        const submit = await submitFanOut([
+          { url: a.url, secret: secretA, batch_size: 1 },
+          { url: b.url, secret: secretB, batch_size: 1 },
+        ]);
+        const { job_id } = (await submit.json()) as { job_id: string };
+
+        // Wait until the first POST is in flight (recorded before the delay).
+        for (let i = 0; i < 100 && a.received.length === 0; i++) {
+          await new Promise((r) => setTimeout(r, 100));
+        }
+        const del = await fetch(`${service.url}/v1/crawls/${job_id}`, {
+          method: "DELETE",
+          headers: authHeaders,
+        });
+        expect(del.status).toBe(202);
+
+        const status = await pollUntilSettled(job_id);
+        expect(status.status).toBe("cancelled");
+        for (const recv of [a, b]) {
+          const last = JSON.parse(recv.received.at(-1)!.body) as { done?: { status: string } };
+          expect(last.done?.status).toBe("cancelled");
+        }
+      } finally {
+        await a.close();
+        await b.close();
+      }
+    });
   });
 });
 
