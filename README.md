@@ -86,7 +86,8 @@ and the full env-var reference are documented in
 
 ```sh
 bun install
-bun run typecheck && bun run lint && bun run build && bun run test
+bun run build   # first: the service resolves @oddlyeven/kravla types from core's dist
+bun run typecheck && bun run lint && bun run test
 ```
 
 QA tooling lives in [`scripts/`](scripts): `bun run detect:municipal-services` scans the SKL
