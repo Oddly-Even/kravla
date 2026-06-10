@@ -11,11 +11,15 @@
     "directory": "packages/service"
   },
   "scripts": {
+    "dev": "bun --watch src/index.ts",
+    "start": "bun src/index.ts",
     "build": "tsup",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@oddlyeven/kravla": "workspace:*"
+    "@oddlyeven/kravla": "workspace:*",
+    "pino": "^10.3.1",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "tsup": "^8.5.0"

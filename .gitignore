@@ -5,3 +5,4 @@ dist/
 coverage/
 # extraction-fidelity downloads live fixtures here via `bun run extraction:fidelity:fetch`
 scripts/extraction-fidelity/output/
+smoke.ts

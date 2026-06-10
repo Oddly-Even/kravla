@@ -5,10 +5,10 @@ e-service harvesting, platform detection (Sitevision, EpiServer, Netpublicator, 
 Readability-based content extraction. Works on any site; battle-tested against hundreds of real
 Swedish municipal hosts and their CDN quirks.
 
-| Package                               | What it is                                                                 |
-| ------------------------------------- | -------------------------------------------------------------------------- |
-| [`@oddlyeven/kravla`](packages/core)  | The crawler library — embed it in-process (Node ≥ 20, ESM).                |
-| `@oddlyeven/kravla-service` (Phase 2) | Headless HTTP wrapper — NDJSON streaming + signed webhooks, one container. |
+| Package                                         | What it is                                                                 |
+| ----------------------------------------------- | -------------------------------------------------------------------------- |
+| [`@oddlyeven/kravla`](packages/core)            | The crawler library — embed it in-process (Node ≥ 20, ESM).                |
+| [`@oddlyeven/kravla-service`](packages/service) | Headless HTTP wrapper — NDJSON streaming + signed webhooks, one container. |
 
 ## Library quick start
 
