@@ -14,7 +14,7 @@
       },
     },
     "packages/core": {
-      "name": "@oddlyeven/kravla",
+      "name": "@oddly-even/kravla",
       "version": "0.1.0-alpha.0",
       "dependencies": {
         "@crawlee/cheerio": "^3.16.0",
@@ -35,10 +35,10 @@
       },
     },
     "packages/service": {
-      "name": "@oddlyeven/kravla-service",
+      "name": "@oddly-even/kravla-service",
       "version": "0.1.0-alpha.0",
       "dependencies": {
-        "@oddlyeven/kravla": "workspace:*",
+        "@oddly-even/kravla": "workspace:*",
         "pino": "^10.3.1",
         "zod": "^4.4.3",
       },
@@ -180,9 +180,9 @@
 
     "@napi-rs/wasm-runtime": ["@napi-rs/wasm-runtime@1.1.5", "", { "dependencies": { "@tybys/wasm-util": "^0.10.2" }, "peerDependencies": { "@emnapi/core": "^1.7.1", "@emnapi/runtime": "^1.7.1" } }, "sha512-AWPoBRJ9tsnVhor4sjO7rkni+7p+2IAEFj6cx06UgP10jkQHqay/36uRV/bFkgrh18D9vb4cr8Q0Pthskgzy+Q=="],
 
-    "@oddlyeven/kravla": ["@oddlyeven/kravla@workspace:packages/core"],
+    "@oddly-even/kravla": ["@oddly-even/kravla@workspace:packages/core"],
 
-    "@oddlyeven/kravla-service": ["@oddlyeven/kravla-service@workspace:packages/service"],
+    "@oddly-even/kravla-service": ["@oddly-even/kravla-service@workspace:packages/service"],
 
     "@oxc-project/types": ["@oxc-project/types@0.133.0", "", {}, "sha512-KzkdCd6Uxqnf6l3HOw1xfatAlUURA0g14cvBYFyJ5SaNOQbOUvBr9PKArcPcrNIeRsBdgcUzOGrhKveVpvOIGA=="],
 

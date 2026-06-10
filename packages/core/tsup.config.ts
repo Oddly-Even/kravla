@@ -5,7 +5,7 @@ export default defineConfig({
     index: "src/index.ts",
     // Browser-safe registry of Swedish municipalities + verified Open
     // ePlatform portals. No Crawlee/node imports — consumable from client
-    // bundles via `@oddlyeven/kravla/municipalities`.
+    // bundles via `@oddly-even/kravla/municipalities`.
     municipalities: "src/open-eplatform/municipalities.client.ts",
   },
   format: ["esm"],

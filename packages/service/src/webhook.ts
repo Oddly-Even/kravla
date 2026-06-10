@@ -9,7 +9,7 @@
 import { createHmac } from "node:crypto";
 import { lookup } from "node:dns/promises";
 import { isIP } from "node:net";
-import type { Logger } from "@oddlyeven/kravla";
+import type { Logger } from "@oddly-even/kravla";
 
 const DELIVERY_ATTEMPTS = 3;
 const DELIVERY_BACKOFF_MS = [1_000, 5_000];

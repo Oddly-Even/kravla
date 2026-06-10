@@ -6,7 +6,7 @@
 import { createServer, type Server } from "node:http";
 import type { AddressInfo } from "node:net";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { noopLogger } from "@oddlyeven/kravla";
+import { noopLogger } from "@oddly-even/kravla";
 import { createApp } from "../../src/app";
 import type { ServiceConfig } from "../../src/config";
 import { signBody } from "../../src/webhook";

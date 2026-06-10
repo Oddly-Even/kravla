@@ -12,7 +12,7 @@
  *   POST   /v1/preview       — dry-run probe of a candidate source
  */
 import type { IncomingMessage, ServerResponse } from "node:http";
-import { previewCrawlSource, type Logger } from "@oddlyeven/kravla";
+import { previewCrawlSource, type Logger } from "@oddly-even/kravla";
 import type { ZodType } from "zod";
 import type { ServiceConfig } from "./config";
 import { runCrawlJob } from "./dispatch";

@@ -50,7 +50,7 @@ jobs:
       - run: bun install --frozen-lockfile
       - run: bun run build
       # Prereleases (0.1.0-alpha.N) land on the `next` dist-tag; stable on `latest`.
-      - name: Publish @oddlyeven/kravla
+      - name: Publish @oddly-even/kravla
         working-directory: packages/core
         run: |
           VERSION=$(node -p "require('./package.json').version")

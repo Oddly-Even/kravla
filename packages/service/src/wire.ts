@@ -10,7 +10,7 @@ import type {
   FailedUrl,
   PreviewResult,
   RobotsSnapshot,
-} from "@oddlyeven/kravla";
+} from "@oddly-even/kravla";
 
 export type CrawlEvent =
   | { type: "robots"; robots: ReturnType<typeof robotsToWire> }

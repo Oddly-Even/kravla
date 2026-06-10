@@ -1,6 +1,6 @@
-# @oddlyeven/kravla-service
+# @oddly-even/kravla-service
 
-Headless HTTP wrapper around [`@oddlyeven/kravla`](../core). One container, one static API key,
+Headless HTTP wrapper around [`@oddly-even/kravla`](../core). One container, one static API key,
 HTTP in / pages out. No persistence or queue — a restart forgets running jobs and callers
 re-submit; retries and scheduling belong to the consumer.
 

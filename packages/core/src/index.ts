@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 /**
- * @oddlyeven/kravla — polite web crawler with sitemap/RSS ingestion,
+ * @oddly-even/kravla — polite web crawler with sitemap/RSS ingestion,
  * platform detection and content extraction.
  *
  * Server-only entry point (pulls in Crawlee). The municipality registry is
  * also available without any Crawlee/node baggage via the browser-safe
- * subpath export `@oddlyeven/kravla/municipalities`.
+ * subpath export `@oddly-even/kravla/municipalities`.
  */
 export * from "./logger";
 export * from "./options";

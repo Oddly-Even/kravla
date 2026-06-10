@@ -15,7 +15,7 @@ import {
   type CrawlOutcome,
   type CrawlRunnerInput,
   type Logger,
-} from "@oddlyeven/kravla";
+} from "@oddly-even/kravla";
 import type { ServiceConfig } from "./config";
 import type { CrawlRequest } from "./schema";
 import { outcomeToWire, pageToWire, robotsToWire, type CrawlEvent, type DoneEvent } from "./wire";

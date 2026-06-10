@@ -5,15 +5,15 @@ e-service harvesting, platform detection (Sitevision, EpiServer, Netpublicator, 
 Readability-based content extraction. Works on any site; battle-tested against hundreds of real
 Swedish municipal hosts and their CDN quirks.
 
-| Package                                         | What it is                                                                 |
-| ----------------------------------------------- | -------------------------------------------------------------------------- |
-| [`@oddlyeven/kravla`](packages/core)            | The crawler library — embed it in-process (Node ≥ 20, ESM).                |
-| [`@oddlyeven/kravla-service`](packages/service) | Headless HTTP wrapper — NDJSON streaming + signed webhooks, one container. |
+| Package                                          | What it is                                                                 |
+| ------------------------------------------------ | -------------------------------------------------------------------------- |
+| [`@oddly-even/kravla`](packages/core)            | The crawler library — embed it in-process (Node ≥ 20, ESM).                |
+| [`@oddly-even/kravla-service`](packages/service) | Headless HTTP wrapper — NDJSON streaming + signed webhooks, one container. |
 
 ## Library quick start
 
 ```ts
-import { runCrawl } from "@oddlyeven/kravla";
+import { runCrawl } from "@oddly-even/kravla";
 
 const outcome = await runCrawl({
   seedUrl: "https://www.example.se",
@@ -41,7 +41,7 @@ The static SKL registry of Swedish municipalities (with verified Open ePlatform 
 as a separate entry point with zero crawler dependencies — safe for client bundles:
 
 ```ts
-import { allMunicipalities } from "@oddlyeven/kravla/municipalities";
+import { allMunicipalities } from "@oddly-even/kravla/municipalities";
 ```
 
 ### Other entry points
@@ -86,7 +86,7 @@ and the full env-var reference are documented in
 
 ```sh
 bun install
-bun run build   # first: the service resolves @oddlyeven/kravla types from core's dist
+bun run build   # first: the service resolves @oddly-even/kravla types from core's dist
 bun run typecheck && bun run lint && bun run test
 ```
 
