@@ -101,6 +101,74 @@ describe("auth + plumbing", () => {
   });
 });
 
+describe("wire fields for embedding consumers", () => {
+  async function streamEvents(body: object): Promise<{ type: string }[]> {
+    const res = await fetch(`${service.url}/v1/crawls`, {
+      method: "POST",
+      headers: authHeaders,
+      body: JSON.stringify(body),
+    });
+    expect(res.status).toBe(200);
+    return (await res.text())
+      .trim()
+      .split("\n")
+      .map((l) => JSON.parse(l) as { type: string });
+  }
+
+  it("skip_urls suppresses re-delivery and counts the page as skipped", async () => {
+    const events = await streamEvents({
+      url: fixtures.url,
+      crawl_type: "crawl",
+      depth: 1,
+      skip_urls: [`${fixtures.url}/a`],
+    });
+    const pages = events.filter((e) => e.type === "page") as { page: { url: string } }[];
+    expect(pages.map((p) => p.page.url)).not.toContain(`${fixtures.url}/a`);
+    expect(pages.length).toBe(2);
+    const done = events.at(-1) as { outcome: { skipped_count: number } };
+    expect(done.outcome.skipped_count).toBe(1);
+  });
+
+  it("sitemap_urls bypasses service-side sitemap discovery", async () => {
+    // The fixture's own /sitemap.xml lists all three pages — if the service
+    // consulted it, three pages would come back instead of the two we pass.
+    const events = await streamEvents({
+      url: fixtures.url,
+      crawl_type: "sitemap",
+      depth: 0,
+      sitemap_urls: [`${fixtures.url}/a`, `${fixtures.url}/b`],
+    });
+    const pages = events.filter((e) => e.type === "page") as { page: { url: string } }[];
+    expect(pages.map((p) => p.page.url).sort()).toEqual([`${fixtures.url}/a`, `${fixtures.url}/b`]);
+  });
+
+  it("rejects sitemap_urls outside sitemap mode", async () => {
+    const res = await fetch(`${service.url}/v1/crawls`, {
+      method: "POST",
+      headers: authHeaders,
+      body: JSON.stringify({
+        url: fixtures.url,
+        crawl_type: "crawl",
+        sitemap_urls: [`${fixtures.url}/a`],
+      }),
+    });
+    expect(res.status).toBe(400);
+  });
+
+  it("rejects municipality_name outside open_eplatform mode", async () => {
+    const res = await fetch(`${service.url}/v1/crawls`, {
+      method: "POST",
+      headers: authHeaders,
+      body: JSON.stringify({
+        url: fixtures.url,
+        crawl_type: "crawl",
+        municipality_name: "Sundsvall",
+      }),
+    });
+    expect(res.status).toBe(400);
+  });
+});
+
 describe("stream mode", () => {
   it("streams NDJSON events and a terminal done", async () => {
     const res = await fetch(`${service.url}/v1/crawls`, {

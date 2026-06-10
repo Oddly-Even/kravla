@@ -67,6 +67,16 @@ const RawCrawlRequestSchema = z.object({
   index_linked_files: z.boolean().optional(),
   limits: LimitsSchema.optional(),
   conditional_gets: z.array(ConditionalGetSchema).max(50_000).optional(),
+  /** URLs already processed in a prior attempt — counted as skipped, not re-delivered. */
+  skip_urls: z.array(z.string()).max(100_000).optional(),
+  /**
+   * Pre-resolved sitemap URLs (sitemap mode only). When set, the service
+   * skips its own sitemap discovery/load — callers that already filtered by
+   * lastmod (e.g. Ladan) keep that filtering.
+   */
+  sitemap_urls: z.array(z.url()).max(100_000).optional(),
+  /** Display name stamped on open_eplatform page metadata (callers own the registry). */
+  municipality_name: z.string().min(1).max(200).optional(),
   /** Override the robots/User-Agent product token for this job. */
   user_agent: z.string().min(1).max(200).optional(),
   delivery: DeliverySchema.default({ mode: "stream" }),
@@ -78,6 +88,20 @@ export type CrawlRequest = Omit<z.infer<typeof RawCrawlRequestSchema>, "delivery
 export type WebhookDelivery = Extract<Delivery, { mode: "webhook" }>;
 
 export const CrawlRequestSchema = RawCrawlRequestSchema.superRefine((req, ctx) => {
+  if (req.sitemap_urls && req.crawl_type !== "sitemap") {
+    ctx.addIssue({
+      code: "custom",
+      path: ["sitemap_urls"],
+      message: 'sitemap_urls requires crawl_type "sitemap"',
+    });
+  }
+  if (req.municipality_name && req.crawl_type !== "open_eplatform") {
+    ctx.addIssue({
+      code: "custom",
+      path: ["municipality_name"],
+      message: 'municipality_name requires crawl_type "open_eplatform"',
+    });
+  }
   if (req.delivery.mode !== "webhook") return;
   const d = req.delivery;
   if (d.targets && (d.url !== undefined || d.secret !== undefined || d.batch_size !== undefined)) {

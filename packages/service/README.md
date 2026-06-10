@@ -48,6 +48,13 @@ robots.txt is always honored — there is no opt-out.
     "request_delay_seconds": 1,
   },
   "conditional_gets": [{ "url": "https://…", "etag": "\"abc\"", "last_modified": "…" }],
+  // URLs already processed in a prior attempt — counted as skipped, not re-delivered.
+  "skip_urls": ["https://…"],
+  // sitemap mode only: pre-resolved URLs; skips the service's own sitemap
+  // discovery so caller-side filtering (e.g. by lastmod) is preserved.
+  "sitemap_urls": ["https://…"],
+  // open_eplatform mode only: display name stamped on page metadata.
+  "municipality_name": "Sundsvall",
   "user_agent": "kravla", // per-job override of the robots/UA token
   "delivery": { "mode": "stream" }, // default
 }

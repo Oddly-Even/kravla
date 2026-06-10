@@ -69,6 +69,8 @@ export async function runCrawlJob(args: {
     excludeUrlPatterns: request.exclude_url_patterns,
     indexLinkedFiles: request.index_linked_files,
     cacheHints,
+    skipUrls: request.skip_urls?.length ? new Set(request.skip_urls) : undefined,
+    municipalityName: request.municipality_name,
     signal: jobSignal,
     logger,
     userAgent,
@@ -102,6 +104,12 @@ export async function runCrawlJob(args: {
         outcome = await runOpenEplatformAsStreaming(input);
         break;
       case "sitemap": {
+        // Pre-resolved URLs from the caller bypass service-side discovery —
+        // callers that already filtered by lastmod keep that filtering.
+        if (request.sitemap_urls) {
+          outcome = await runCrawl({ ...input, sitemapUrls: request.sitemap_urls });
+          break;
+        }
         const sitemap = await loadSitemap(request.url, { logger, userAgent });
         // Sitemap-load failures surface as failed events (per-URL), the same
         // way Ladan persists them as lastError records on the source.
