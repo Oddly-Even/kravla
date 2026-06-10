@@ -48,7 +48,7 @@ Runtime knobs (all optional, defaults in parentheses): `pageConcurrency` (1), `m
 
 ## Run as a service
 
-For non-Node consumers (Eneo, anything that speaks HTTP), run the headless service instead of
+For non-Node consumers (anything that speaks HTTP), run the headless service instead of
 embedding the library — one container, one API key, HTTP in / pages out:
 
 ```sh

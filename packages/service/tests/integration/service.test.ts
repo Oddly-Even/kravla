@@ -392,8 +392,8 @@ describe("webhook mode", () => {
       const b = await startReceiver();
       try {
         const submit = await submitFanOut([
-          { url: a.url, secret: secretA, batch_size: 1, name: "eneo" },
-          { url: b.url, secret: secretB, batch_size: 50, name: "ladan" },
+          { url: a.url, secret: secretA, batch_size: 1, name: "indexer" },
+          { url: b.url, secret: secretB, batch_size: 50, name: "archive" },
         ]);
         expect(submit.status).toBe(202);
         const { job_id } = (await submit.json()) as { job_id: string };
@@ -401,8 +401,8 @@ describe("webhook mode", () => {
         const status = await pollUntilSettled(job_id);
         expect(status.status).toBe("completed");
         expect(status.targets.map((t) => [t.name, t.status])).toEqual([
-          ["eneo", "delivered"],
-          ["ladan", "delivered"],
+          ["indexer", "delivered"],
+          ["archive", "delivered"],
         ]);
 
         // Same events on both sides: robots + 3 pages (+ done flag on last POST).

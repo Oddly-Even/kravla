@@ -2,7 +2,7 @@
 /**
  * In-memory job registry. Deliberately no persistence or queue: a restart
  * forgets jobs and callers re-submit (stateful retries/schedules belong to
- * consumers — Ladan has BullMQ, Eneo its own queue). Stream-mode jobs count
+ * consumers and their own queues). Stream-mode jobs count
  * toward the concurrency cap but are never registered by id (cancel =
  * drop the connection); webhook jobs get an id for status/cancel.
  */

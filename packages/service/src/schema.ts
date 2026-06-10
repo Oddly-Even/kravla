@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 /**
- * Wire schemas for the v1 API. snake_case on the wire (Python-friendly —
- * Eneo is the first consumer), camelCase internally.
+ * Wire schemas for the v1 API. snake_case on the wire (Python-friendly),
+ * camelCase internally.
  */
 import { z } from "zod";
 
@@ -72,7 +72,7 @@ const RawCrawlRequestSchema = z.object({
   /**
    * Pre-resolved sitemap URLs (sitemap mode only). When set, the service
    * skips its own sitemap discovery/load — callers that already filtered by
-   * lastmod (e.g. Ladan) keep that filtering.
+   * lastmod keep that filtering.
    */
   sitemap_urls: z.array(z.url()).max(100_000).optional(),
   /** Display name stamped on open_eplatform page metadata (callers own the registry). */

@@ -62,7 +62,7 @@ corrupts the comparison; `run.ts` hard-errors on unmapped fixtures and
 `fetch.ts` refuses to save a fixture whose URL now redirects elsewhere).
 `fetch.ts` decodes bodies charset-aware (legacy ISO-8859-1 municipal pages
 would be mojibake'd by plain `res.text()`) and uses the house
-`ladan/<component>` user-agent with a 12 s timeout.
+`kravla/<component>` user-agent with a 12 s timeout.
 
 ## Reading the results
 

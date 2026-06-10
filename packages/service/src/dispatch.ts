@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 /**
  * Maps a validated wire request onto the library's streaming-callback seam
- * and routes by crawl_type, mirroring Ladan's dispatcher: `feed` and
+ * and routes by crawl_type: `feed` and
  * `open_eplatform` take their streaming adapters, `sitemap` loads the
  * sitemap here (the library expects pre-resolved URLs), `crawl` goes
  * straight to the Crawlee runner.
@@ -111,8 +111,8 @@ export async function runCrawlJob(args: {
           break;
         }
         const sitemap = await loadSitemap(request.url, { logger, userAgent });
-        // Sitemap-load failures surface as failed events (per-URL), the same
-        // way Ladan persists them as lastError records on the source.
+        // Sitemap-load failures surface as failed events (per-URL) so
+        // consumers can record them against the source.
         for (const err of sitemap.errors) {
           await onEvent({
             type: "failed",

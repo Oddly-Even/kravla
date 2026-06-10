@@ -15,7 +15,7 @@ import { FIXTURE_URLS } from "./urls";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const FIXTURES = join(HERE, "fixtures");
-const UA = "ladan/extraction-fidelity (+https://github.com/Oddly-Even/ladan)";
+const UA = "kravla/extraction-fidelity (+https://github.com/Oddly-Even/kravla)";
 const TIMEOUT_MS = 12_000;
 
 /**

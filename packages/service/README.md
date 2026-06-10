@@ -80,15 +80,15 @@ Cancel by dropping the connection — the crawl aborts within a page.
 
 ### Webhook delivery
 
-One crawl can fan out to up to 5 receivers — e.g. an Eneo worker AND a Ladan instance get the
+One crawl can fan out to up to 5 receivers — e.g. a search indexer AND an archival store get the
 same crawl without the site being crawled twice:
 
 ```jsonc
 "delivery": {
   "mode": "webhook",
   "targets": [
-    { "url": "https://eneo.example/hook",  "secret": "…≥16 chars…", "batch_size": 25, "name": "eneo" },
-    { "url": "https://ladan.example/hook", "secret": "…another…",   "name": "ladan" }
+    { "url": "https://indexer.example/hook", "secret": "…≥16 chars…", "batch_size": 25, "name": "indexer" },
+    { "url": "https://archive.example/hook", "secret": "…another…",   "name": "archive" }
   ]
 }
 ```
@@ -116,7 +116,7 @@ pages answering 304 carry no body for ANY receiver. 304 means nothing changed, s
 misses updates — but a secondary receiver that tracks per-document freshness should treat
 `unchanged` as a "still exists" touch.
 
-Verify in Python (e.g. from Eneo):
+Verify in Python:
 
 ```python
 import hmac, hashlib

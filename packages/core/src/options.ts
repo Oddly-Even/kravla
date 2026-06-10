@@ -4,8 +4,8 @@ import type { Logger } from "./logger";
 /**
  * Product token used for robots.txt rule matching and as the base of every
  * outgoing User-Agent header (`<token>/sitemap-loader (+repo-url)` etc.).
- * Callers with established robots rules under another token (e.g. Ladan
- * passes `"ladan"`) override it so existing site policies keep applying.
+ * Callers with established robots rules under another token override it
+ * so existing site policies keep applying.
  */
 export const DEFAULT_USER_AGENT = "kravla";
 
