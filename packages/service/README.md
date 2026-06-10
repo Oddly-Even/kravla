@@ -7,8 +7,11 @@ re-submit; retries and scheduling belong to the consumer.
 ## Run
 
 ```sh
-# local
+# local — `bun run build` first: the service imports @oddly-even/kravla from core's dist,
+# so a fresh clone (or any packages/core/src change) needs a rebuild to take effect
 CRAWLER_API_KEY=changeme bun packages/service/src/index.ts
+# or, auto-restarting on service-src changes and core rebuilds:
+cd packages/service && CRAWLER_API_KEY=changeme bun run dev
 
 # container
 docker run -p 8080:8080 -e CRAWLER_API_KEY=changeme ghcr.io/oddly-even/kravla

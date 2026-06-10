@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "build": "bun run --filter '*' build",
+    "dev": "bun run --cwd packages/service dev",
     "typecheck": "bun run --filter '*' typecheck",
     "lint": "eslint .",
     "format": "prettier --write .",

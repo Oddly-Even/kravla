@@ -78,9 +78,15 @@ and the full env-var reference are documented in
 
 ```sh
 bun install
-bun run build   # first: the service resolves @oddly-even/kravla types from core's dist
+bun run build   # required first: the service imports @oddly-even/kravla from core's dist
 bun run typecheck && bun run lint && bun run test
 ```
+
+The service loads core through its published entry point (`packages/core/dist`), at runtime as
+well as for types — so changes under `packages/core/src` don't reach a running service until
+`bun run build` regenerates dist. `bun run dev` in `packages/service` restarts on service-src
+changes (and on a core rebuild); pair it with `bunx tsup --watch` in `packages/core` when
+iterating on core.
 
 QA tooling lives in [`scripts/`](scripts): `bun run extraction:fidelity` compares extraction
 candidates against captured fixtures.
