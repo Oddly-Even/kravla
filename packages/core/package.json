@@ -21,17 +21,12 @@
     "municipality"
   ],
   "files": [
-    "dist",
-    "data"
+    "dist"
   ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
-    },
-    "./municipalities": {
-      "types": "./dist/municipalities.d.ts",
-      "default": "./dist/municipalities.js"
     }
   },
   "scripts": {

@@ -18,46 +18,7 @@
  * changed).
  */
 import type { CrawlOutcome, CrawlRunnerInput } from "../crawl-runner";
-import { findMunicipalityByName, listMunicipalities } from "./municipalities";
 import { runOpenEplatformCrawl } from "./runner";
-
-/**
- * For an Open ePlatform source URL like `https://sjalvservice.sundsvall.se`,
- * derive the municipality display name ("Sundsvall") by looking up the
- * eTLD+1 (`sundsvall.se`) in the static SKL registry. Falls back to a name
- * lookup on the leading subdomain so portals on personalised hostnames
- * still get a sensible value rather than null.
- */
-export function guessMunicipalityName(url: string): string | null {
-  let hostname: string;
-  try {
-    hostname = new URL(url).hostname.toLowerCase();
-  } catch {
-    return null;
-  }
-
-  // Walk from the most specific subdomain down to the bare eTLD+1, trying
-  // each as a `domain` match. Municipalities the registry knows about
-  // always have `domain` set; the leading-subdomain fallback covers the rest.
-  const labels = hostname.split(".");
-  const candidates: string[] = [];
-  for (let i = 0; i < labels.length - 1; i++) {
-    candidates.push(labels.slice(i).join("."));
-  }
-
-  const all = listMunicipalities();
-  for (const cand of candidates) {
-    const hit = all.find((m) => m.domain && m.domain.toLowerCase() === cand);
-    if (hit) return hit.name;
-  }
-
-  const leading = labels[0];
-  if (leading) {
-    const byName = findMunicipalityByName(leading);
-    if (byName) return byName.name;
-  }
-  return null;
-}
 
 export async function runOpenEplatformAsStreaming(input: CrawlRunnerInput): Promise<CrawlOutcome> {
   let okCount = 0;
@@ -77,7 +38,7 @@ export async function runOpenEplatformAsStreaming(input: CrawlRunnerInput): Prom
 
   const result = await runOpenEplatformCrawl({
     seedUrl: input.seedUrl,
-    municipalityName: guessMunicipalityName(input.seedUrl),
+    municipalityName: input.municipalityName ?? null,
     logger: input.logger,
     userAgent: input.userAgent,
   });

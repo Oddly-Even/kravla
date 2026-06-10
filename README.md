@@ -35,22 +35,14 @@ robots.txt is always honored (no opt-out): rules are matched against the `userAg
 Runtime knobs (all optional, defaults in parentheses): `pageConcurrency` (1), `memoryMbytes`
 (1024), `requestHandlerTimeoutSecs` (900), `maxHtmlBytes` (8 MiB, 0 = unlimited).
 
-### Browser-safe municipality registry
-
-The static SKL registry of Swedish municipalities (with verified Open ePlatform portals) ships
-as a separate entry point with zero crawler dependencies — safe for client bundles:
-
-```ts
-import { allMunicipalities } from "@oddly-even/kravla/municipalities";
-```
-
 ### Other entry points
 
 - `previewCrawlSource(input)` — dry-run estimate (seed probe + robots + sitemap + sample crawl).
 - `loadSitemap(seedUrl)` / `probeSitemapStatus(seedUrl)` — native-fetch sitemap loader
   (sidesteps the got-scraping HTTP/2 bug that breaks CDN-fronted .se hosts).
 - `fetchAndParseFeed(url)` — RSS/Atom with autodiscovery and conditional GET.
-- `runOpenEplatformCrawl(input)` — harvest a municipality's e-service catalog.
+- `runOpenEplatformCrawl(input)` — harvest an Open ePlatform e-service catalog. The optional
+  `municipalityName` is caller-supplied display data — kravla ships no municipality registry.
 - `loadRobotsPolicyForUrl`, `canonicalizeSourceUrl`, `extractContent`, `runDetectors`,
   `runEnrichers`, …
 
@@ -90,8 +82,7 @@ bun run build   # first: the service resolves @oddly-even/kravla types from core
 bun run typecheck && bun run lint && bun run test
 ```
 
-QA tooling lives in [`scripts/`](scripts): `bun run detect:municipal-services` scans the SKL
-corpus with every platform detector; `bun run extraction:fidelity` compares extraction
+QA tooling lives in [`scripts/`](scripts): `bun run extraction:fidelity` compares extraction
 candidates against captured fixtures.
 
 ## License

@@ -175,6 +175,12 @@ export type CrawlRunnerInput = {
    */
   indexLinkedFiles?: boolean;
   /**
+   * Display name attached to harvested e-services (`open_eplatform` only;
+   * other crawl types ignore it). The crawler has no municipality registry —
+   * the caller derives the name from the seed URL however it likes.
+   */
+  municipalityName?: string | null;
+  /**
    * Conditional-GET hints keyed by URL. When set, the preNavigationHook
    * sends `If-None-Match` / `If-Modified-Since` for matching URLs. Caller
    * passes `undefined` (or an empty map) to skip cache hints entirely
