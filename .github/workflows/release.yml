@@ -36,7 +36,8 @@ jobs:
 
   npm:
     runs-on: ubuntu-latest
-    # Skips cleanly until the NPM_TOKEN repo secret is configured.
+    # Auth is npm Trusted Publishing (OIDC) — no token, no secret. Gated off
+    # until the trusted publisher is configured on npmjs (package settings).
     if: ${{ vars.NPM_PUBLISH_ENABLED == 'true' }}
     steps:
       - uses: actions/checkout@v4
@@ -47,6 +48,8 @@ jobs:
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org
+      # OIDC trusted publishing needs npm >= 11.5.1; node 22 ships an older one.
+      - run: npm install -g npm@latest
       - run: bun install --frozen-lockfile
       - run: bun run build
       # Prereleases (0.1.0-alpha.N) land on the `next` dist-tag; stable on `latest`.
@@ -56,5 +59,3 @@ jobs:
           VERSION=$(node -p "require('./package.json').version")
           if [[ "$VERSION" == *-* ]]; then TAG=next; else TAG=latest; fi
           npm publish --provenance --access public --tag "$TAG"
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
