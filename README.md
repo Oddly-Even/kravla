@@ -54,6 +54,34 @@ import { allMunicipalities } from "@oddlyeven/kravla/municipalities";
 - `loadRobotsPolicyForUrl`, `canonicalizeSourceUrl`, `extractContent`, `runDetectors`,
   `runEnrichers`, …
 
+## Run as a service
+
+For non-Node consumers (Eneo, anything that speaks HTTP), run the headless service instead of
+embedding the library — one container, one API key, HTTP in / pages out:
+
+```sh
+# local
+CRAWLER_API_KEY=changeme bun packages/service/src/index.ts
+
+# container
+docker build -t kravla-service .
+docker run -p 8080:8080 -e CRAWLER_API_KEY=changeme kravla-service
+# (or pull ghcr.io/oddly-even/kravla once a release is tagged)
+```
+
+Then stream a crawl as NDJSON:
+
+```sh
+curl -N -X POST http://localhost:8080/v1/crawls \
+  -H "authorization: Bearer changeme" -H "content-type: application/json" \
+  -d '{"url": "https://www.example.se", "depth": 1, "limits": {"max_pages": 50}}'
+```
+
+Each line is one event (`robots`, `page`, `failed`, …) ending with a terminal `done` summary.
+Webhook delivery (HMAC-signed batches + job status/cancel endpoints), the `/v1/preview` dry-run,
+and the full env-var reference are documented in
+[`packages/service/README.md`](packages/service/README.md).
+
 ## Development
 
 ```sh
