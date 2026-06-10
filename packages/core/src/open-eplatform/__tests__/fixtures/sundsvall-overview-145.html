@@ -1,0 +1,640 @@
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=EDGE" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2" />
+    <meta name="keywords" content="Open ePlatform, E-tj&auml;nster Sundsvalls kommun" />
+    <meta
+      name="description"
+      content="H&amp;auml;r kan du ans&amp;ouml;ka om nytt serveringstillst&amp;aring;nd. Du kan ocks&amp;aring; anm&amp;auml;la eller ans&amp;ouml;ka om f&amp;ouml;r&amp;auml;ndringar eller till&amp;auml;gg i ditt befintliga tillst&amp;aring;nd."
+    />
+    <title>Servering av alkoholdrycker - Sundsvalls kommun</title>
+    <link rel="shortcut icon" href="/images/favicon-16x16.png" size="16x16" />
+    <link rel="shortcut icon" href="/images/favicon-32x32.png" size="32x32" />
+    <link rel="stylesheet" href="/css/global.css?v=3W2KZvwSuIM1NcNr" />
+    <link rel="stylesheet" href="/css/header.css?v=3W2KZvwSuIM1NcNr" />
+    <link rel="stylesheet" href="/css/layout.css?v=3W2KZvwSuIM1NcNr" />
+    <link rel="stylesheet" href="/css/modules.css?v=3W2KZvwSuIM1NcNr" />
+    <link rel="stylesheet" href="/css/interface.css?v=3W2KZvwSuIM1NcNr" />
+    <link rel="stylesheet" href="/css/openhierarchy.css?v=3W2KZvwSuIM1NcNr" />
+    <link rel="stylesheet" href="/css/alternative-design.css?v=3W2KZvwSuIM1NcNr" />
+    <link rel="stylesheet" href="/css/overrides.css?v=3W2KZvwSuIM1NcNr" />
+    <script
+      type="text/javascript"
+      src="/static/global/jquery/jquery.js?v=3W2KZvwSuIM1NcNr"
+    ></script>
+    <script
+      type="text/javascript"
+      src="/static/global/jquery/jquery-migrate.js?v=3W2KZvwSuIM1NcNr"
+    ></script>
+    <script
+      type="text/javascript"
+      src="/static/global/jquery/jquery-ui.js?v=3W2KZvwSuIM1NcNr"
+    ></script>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="/static/global/modal/accessible-modal.css?v=3W2KZvwSuIM1NcNr"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="/static/f/1/206/css/flowengine.css?v=3W2KZvwSuIM1NcNr"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="/static/f/1/206/css/targetgroupflowbrowser.css?v=3W2KZvwSuIM1NcNr"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="/static/b/1/22/css/targetgroupflowbrowser.css?v=3W2KZvwSuIM1NcNr"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="/static/b/1/22/css/searchbackgroundmodule.css?v=3W2KZvwSuIM1NcNr"
+    />
+    <script src="/static/global/js/focus-trapper.js?v=3W2KZvwSuIM1NcNr"></script>
+    <script src="/static/global/modal/accessible-modal.js?v=3W2KZvwSuIM1NcNr"></script>
+    <script src="/static/f/1/206/js/jquery.blockui.js?v=3W2KZvwSuIM1NcNr"></script>
+    <script src="/static/f/1/206/js/flowengine.helpdialog.js?v=3W2KZvwSuIM1NcNr"></script>
+    <script src="/static/f/1/206/js/flowengine.js?v=3W2KZvwSuIM1NcNr"></script>
+    <script src="/static/f/1/206/js/flowengine.step-navigator.js?v=3W2KZvwSuIM1NcNr"></script>
+    <script src="/static/f/1/206/js/jquery.expander.min.js?v=3W2KZvwSuIM1NcNr"></script>
+    <script src="/static/f/1/206/js/flowinstancebrowser.js?v=3W2KZvwSuIM1NcNr"></script>
+    <script src="/static/f/1/206/js/jquery.cookie.js?v=3W2KZvwSuIM1NcNr"></script>
+    <script src="/static/f/1/206/js/targetgroupflowbrowser.js?v=3W2KZvwSuIM1NcNr"></script>
+    <script src="/static/b/1/22/js/jquery.cookie.js?v=3W2KZvwSuIM1NcNr"></script>
+    <script src="/static/b/1/22/js/searchbackgroundmodule.js?v=3W2KZvwSuIM1NcNr"></script>
+    <script type="text/javascript" src="/js/fastclick.js?v=3W2KZvwSuIM1NcNr"></script>
+    <script type="module" src="/js/init-oep.js?v=3W2KZvwSuIM1NcNr"></script>
+    <script type="text/javascript" src="/js/init.js?v=3W2KZvwSuIM1NcNr"></script>
+  </head>
+  <body class="override alternative-design">
+    <a href="#main-content" class="skip-to-main">G&aring; direkt till inneh&aring;llet</a>
+    <h1 id="defaultH1" class="visuallyhidden">
+      V&auml;lkommen till Sundsvalls kommuns e-tj&auml;nster
+    </h1>
+    <header class="clearfix">
+      <div class="cwn"></div>
+      <div class="top container">
+        <div class="headercontainer">
+          <a href="/"
+            ><span class="headerlogo"><img alt="" src="/images/logo.svg" /></span
+            ><span class="titlecontainer"
+              ><span class="headertitle">E-tj&auml;nster</span
+              ><span class="headersubtitle">Sundsvalls kommun</span></span
+            ></a
+          >
+        </div>
+        <div class="search-wrapper flowbrowser bg-search" id="bg-search-container">
+          <script type="text/javascript">
+            lastSearchEnabled = true;
+          </script>
+          <div class="inner">
+            <h2 class="only-mobile" id="bg-search-title">S&ouml;k tj&auml;nst</h2>
+            <input
+              type="search"
+              id="bg-search-field"
+              aria-label="S&ouml;k tj&auml;nst, filtrerat resultat visas medan du skriver"
+              name="search"
+              class="search-field"
+              data-searchmoduleuri="/api/v1"
+              placeholder="S&ouml;k bland v&aring;ra e-tj&auml;nster"
+            /><span class="search-close-btn"></span
+            ><a href="#" role="button" class="btn btn-blue xl search-btn only-desktop">S&ouml;k</a
+            ><a href="#" role="button" class="btn btn-blue xl search-btn only-tablet-mobile"
+              ><span class="search-icon"></span
+            ></a>
+          </div>
+          <div class="search-result-wrapper grid-view">
+            <div class="inner">
+              <h2 tabindex="0" class="search-results-title" aria-live="polite">
+                S&ouml;kningen p&aring; "<span class="title"></span>"&nbsp;gav&nbsp;<span
+                  class="hits"
+                ></span
+                >&nbsp;tr&auml;ffar
+              </h2>
+              <div class="category-list">
+                <a class="search-close-btn" role="button" href="#"
+                  >St&auml;ng&nbsp;<i aria-hidden="true">x</i></a
+                >
+                <div class="column-1"></div>
+                <div class="column-2"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="usercontainer">
+          <div class="user">
+            <a href="/oversikt/overview/145?triggerlogin=1" class="logged-out"
+              ><img alt="" src="/images/li_user-2.svg" />
+              Logga in
+            </a>
+          </div>
+        </div>
+      </div>
+      <nav aria-label="Huvudmeny">
+        <div class="container">
+          <a
+            id="toggle-search"
+            role="button"
+            aria-controls="bg-search-container"
+            href="#"
+            class="only-mobile"
+            ><span></span></a
+          ><a
+            class="only-mobile"
+            role="button"
+            href="#"
+            id="toggle-primary"
+            aria-controls="mainmenu"
+            aria-expanded="false"
+            ><span></span
+          ></a>
+          <ul class="primary" id="mainmenu">
+            <li class="only-mobile menuheading">Meny</li>
+            <li class="active selected">
+              <a href="/oversikt"><span>E-tj&auml;nster</span></a>
+            </li>
+            <li>
+              <a href="/minasidor">Mina sidor</a>
+            </li>
+            <li class="">
+              <a href="/statistik"><span>Statistik</span></a>
+            </li>
+            <li class="dd">
+              <div class="marker"></div>
+              <a href="#"
+                ><span>Hj&auml;lp<span class="icon" aria-hidden="true">_</span></span></a
+              >
+              <div class="submenu">
+                <ul>
+                  <li class="">
+                    <a href="/hjalp/page/hjalp"
+                      ><span class="icon arrow"
+                        ><i data-icon-before=">" aria-hidden="true"></i></span
+                      ><span class="text">om e-tj&auml;nsterna</span></a
+                    >
+                  </li>
+                  <li class="">
+                    <a href="/hjalp/page/om bygg- och exploateringskartan 2"
+                      ><span class="icon arrow"
+                        ><i data-icon-before=">" aria-hidden="true"></i></span
+                      ><span class="text">om bygg- och exploateringskartan</span></a
+                    >
+                  </li>
+                  <li class="">
+                    <a href="/hjalp/page/avillkorbetalning"
+                      ><span class="icon arrow"
+                        ><i data-icon-before=">" aria-hidden="true"></i></span
+                      ><span class="text">Allm&auml;nna Villkor</span></a
+                    >
+                  </li>
+                  <li class="">
+                    <a href="/hjalp/page/tillganglighet"
+                      ><span class="icon arrow"
+                        ><i data-icon-before=">" aria-hidden="true"></i></span
+                      ><span class="text">Tillg&auml;nglighet</span></a
+                    >
+                  </li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </header>
+    <div class="top-content"></div>
+    <div class="main container" role="main" id="main-content">
+      <div class="top-content">
+        <section id="OperatingMessageBackgroundModule" class="modal info">
+          <div class="textcontent d-flex align-items-center">
+            <span class="info-symbol grey" aria-hidden="true"></span>
+            <div>
+              Testa g&auml;rna v&aring;ra nya Mina sidor. D&auml;r kan du se och f&ouml;lja dina
+              &auml;renden. Minasidor.sundsvall.se
+            </div>
+          </div>
+        </section>
+      </div>
+      <div class="content-wide">
+        <div id="FlowBrowser" class="contentitem">
+          <script type="text/javascript">
+            userFavouriteModuleURI = "";
+          </script>
+          <section class="no-pad-tablet flow-overview">
+            <div class="section-inside">
+              <div class="heading-wrapper">
+                <figure>
+                  <img alt="" src="/oversikt/icon/1478" />
+                </figure>
+                <div class="heading">
+                  <h1 id="flow_1478" class="xl">Servering av alkoholdrycker</h1>
+                  <span data-icon-before="u" class="marginleft"
+                    >Den h&auml;r tj&auml;nsten kr&auml;ver inloggning</span
+                  >
+                </div>
+              </div>
+              <div class="description textcontent">
+                <div class="position-relative">
+                  <p>
+                    <strong>Ans&ouml;k eller anm&auml;l&nbsp;via e-tj&auml;nst</strong><br />
+                    H&auml;r ans&ouml;ker&nbsp;f&ouml;retag, f&ouml;rening eller stiftelse om
+                    tillst&aring;nd att servera alkoholhaltiga drycker enligt 8 kap 2 &sect;
+                    alkohollagen (2010:1622).<br />
+                    Du kan ocks&aring; anv&auml;nda e-tj&auml;nsten f&ouml;r att anm&auml;la eller
+                    ans&ouml;ka om f&ouml;r&auml;ndringar eller till&auml;gg i ditt f&ouml;retags
+                    befintliga serveringstillst&aring;nd.
+                  </p>
+
+                  <p>
+                    Som privatperson har du endast till&aring;telse att&nbsp;servera alkoholdrycker
+                    till ett slutet s&auml;llskap, inte till allm&auml;nheten.<br />
+                    Ibland kr&auml;vs ocks&aring; ett serveringstillst&aring;nd.
+                    Serveringstillst&aring;ndet g&auml;ller d&aring;&nbsp;vid ett enstaka
+                    tillf&auml;lle, exempelvis p&aring; ett br&ouml;llop.
+                    <a
+                      href="https://sundsvall.se/naringsliv-och-arbete/tillstand-regler-och-tillsyn/avgifter-serveringstillstand/"
+                      target="_blank"
+                      >L&auml;s mer om reglerna</a
+                    >.
+                  </p>
+
+                  <p>
+                    <strong>H&auml;mta dina f&ouml;retagsuppgifter</strong><br />
+                    I e-tj&auml;nsten kan du v&auml;lja att h&auml;mta dina
+                    f&ouml;retagsuppgifter&nbsp;fr&aring;n Bolagsverket, SCB och Skatteverket,
+                    s&aring; att du slipper fylla i dem.<br />
+                    L&auml;s mer p&aring; sidan
+                    <a
+                      href="http://bolagsverket.se/sammansatt-bastjanst-foretagsuppgifter"
+                      target="_blank"
+                      >S&aring; h&auml;r h&auml;mtas dina f&ouml;retagsuppgifter</a
+                    >.<br />
+                    Du kan ocks&aring; v&auml;lja att fylla i uppgifter om ditt f&ouml;retag
+                    manuellt.
+                  </p>
+
+                  <p>
+                    F&ouml;retag, f&ouml;rening eller stiftelse kan anv&auml;nda e-tj&auml;nsten
+                    f&ouml;r att ans&ouml;ka om:
+                  </p>
+
+                  <ul>
+                    <li>Ett nytt stadigvarande tillst&aring;nd.</li>
+                    <li>
+                      F&ouml;r&auml;ndring i befintligt stadigvarande tillst&aring;nd (exempelvis
+                      dryckessortiment, serveringsyta eller serveringstider).
+                    </li>
+                    <li>
+                      Ett tillf&auml;lligt tillst&aring;nd f&ouml;r servering till allm&auml;nheten.
+                    </li>
+                    <li>
+                      Ett tillf&auml;lligt tillst&aring;nd f&ouml;r servering till slutet
+                      s&auml;llskap.
+                    </li>
+                    <li>Anm&auml;la servering av endast folk&ouml;l (klass 2).</li>
+                    <li>
+                      Ans&ouml;ka om tillst&aring;nd f&ouml;r g&aring;rdsf&ouml;rs&auml;ljning av
+                      alkoholdrycker.
+                    </li>
+                  </ul>
+
+                  <p>
+                    F&ouml;retag, f&ouml;rening eller stiftelse som redan har tillst&aring;nd kan
+                    ocks&aring; anv&auml;nda e-tj&auml;nsten f&ouml;r att anm&auml;la:
+                  </p>
+
+                  <ul>
+                    <li>Cateringverksamhet.</li>
+                    <li>Provsmakning av alkoholhaltiga drycker.</li>
+                    <li>Kryddning av spritdryck.</li>
+                    <li>&Auml;ndring av serveringsansvarig personal.</li>
+                    <li>
+                      Person i f&ouml;retaget beh&ouml;ver genomf&ouml;ra Folkh&auml;lsomyndighetens
+                      kunskapsprov.
+                    </li>
+                    <li>
+                      F&ouml;rs&auml;ljning eller avveckling av restaurang eller
+                      serveringsst&auml;lle.
+                    </li>
+                    <li>&Auml;garbyte eller annan f&ouml;r&auml;ndring i bolaget.</li>
+                    <li>
+                      Att bolaget upph&ouml;r och samtliga tillst&aring;nd ska &aring;terkallas.
+                    </li>
+                  </ul>
+
+                  <p>
+                    N&auml;r du f&ouml;retr&auml;der ditt f&ouml;retag s&aring; kan du anv&auml;nda
+                    din egen e-legitimation f&ouml;r att logga in i e-tj&auml;nsten.
+                    E-legitimationen bevisar att det &auml;r du som g&ouml;r ans&ouml;kan.
+                  </p>
+
+                  <p>
+                    <strong>Ans&ouml;k eller anm&auml;l via blankett</strong><br />
+                    Vill du ist&auml;llet g&ouml;ra din ans&ouml;kan eller anm&auml;lan via blankett
+                    s&aring; kan du skicka eller l&auml;mna in blanketten till:
+                  </p>
+
+                  <p>
+                    Postadress:<br />
+                    Sundsvalls kommun<br />
+                    Alkohol- och tobaksenheten<br />
+                    851 85 Sundsvall
+                  </p>
+
+                  <p>
+                    Bes&ouml;ksadress:<br />
+                    Kyrkogatan 26<br />
+                    852 32 Sundsvall
+                  </p>
+
+                  <p>
+                    <strong>Handlingar som du ska bifoga</strong><br />
+                    Det blir smidigare f&ouml;r dig om du har de handlingar du beh&ouml;ver klart
+                    innan du startar e-tj&auml;nsten. Om du inte har dina handlingar
+                    tillg&auml;ngliga f&ouml;r tillf&auml;llet s&aring; kan du p&aring;b&ouml;rja
+                    ditt &auml;rende men spara det och avsluta det vid ett senare tillf&auml;lle.
+                  </p>
+
+                  <p>
+                    Exempel p&aring; handlingar som f&ouml;retag ska bifoga vid ny ans&ouml;kan:<br />
+                    Registreringsbevis fr&aring;n
+                    Bolagsverket,&nbsp;&auml;garf&ouml;rh&aring;llanden,&nbsp;k&ouml;peavtal och
+                    finansiering,&nbsp;ekonomi och budget,&nbsp;dispositionsr&auml;tt
+                    och&nbsp;ritningar &ouml;ver serveringslokal och eventuell uteservering.
+                  </p>
+
+                  <p>
+                    <strong>Lokala f&ouml;rh&aring;llanden i din kommun</strong><br />
+                    En pr&ouml;vningsavgift tas ut vid en ny ans&ouml;kan och vid vissa andra
+                    &auml;rendetyper.<br />
+                    <a
+                      href="https://www.sundsvall.se/naringsliv-och-arbete/tillstand-regler-och-tillsyn/avgifter-serveringstillstand/"
+                      target="_blank"
+                      >L&auml;s mer om serveringstillst&aring;nd och avgifter</a
+                    >.
+                  </p>
+
+                  <p>
+                    T&auml;nk p&aring; att det tar ca 6 till 8 veckor, fr&aring;n det att
+                    ans&ouml;kan &auml;r komplett,&nbsp;att f&aring; sin ans&ouml;kan pr&ouml;vad.
+                    Beslut om stadigvarande tillst&aring;nd fattas av Tillst&aring;ndsutskottet.
+                  </p>
+                </div>
+                <div
+                  class="about-flow-extension full border-radius-small noexpander simplebox textcontent border"
+                >
+                  <h2 class="simplebox-title">
+                    <button
+                      id="simplebox-header-owner"
+                      class="simplebox-header"
+                      aria-expanded="false"
+                      aria-controls="simplebox-owner"
+                    >
+                      Behandling av personuppgifter
+                    </button>
+                  </h2>
+                  <section
+                    id="simplebox-owner"
+                    aria-labelledby="simplebox-header-owner"
+                    class="simplebox-content"
+                    style="display: none"
+                  >
+                    <h3>Personuppgifter som behandlas</h3>
+                    <ul>
+                      <li>Namn</li>
+                      <li>Adress</li>
+                      <li>E-postadress</li>
+                      <li>Personnummer</li>
+                      <li>Telefonnummer</li>
+                      <li>Mobilnummer</li>
+                      <li>IP-nummer</li>
+                    </ul>
+                    <h3>&Auml;ndam&aring;let med behandlingen</h3>
+                    <p>
+                      N&auml;r du skickat in ditt &auml;rende till kommunen, registreras de
+                      personuppgifter som du angett, i kommunens &auml;rendehanteringssystem.
+                      &Auml;ndam&aring;let med behandlingen &auml;r att kommunen ska kunna
+                      fullf&ouml;lja sitt uppdrag som myndighetsut&ouml;vare, samt kunna ge s&aring;
+                      bra och r&auml;ttss&auml;ker service som m&ouml;jligt vid handl&auml;ggningen
+                      av ditt &auml;rende. Vid behandlingen av personuppgifterna&nbsp;till&auml;mpas
+                      g&auml;llande integritetslagstiftning.
+                    </p>
+                    <h3>R&auml;ttslig grund f&ouml;r behandlingen</h3>
+                    <ul>
+                      <li>
+                        Den personuppgiftsansvarige ska kunna fullg&ouml;ra en r&auml;ttslig
+                        skyldighet
+                      </li>
+                      <li>En arbetsuppgift av allm&auml;nt intresse ska kunna utf&ouml;ras</li>
+                      <li>
+                        En arbetsuppgift i samband med myndighetsut&ouml;vning ska kunna
+                        utf&ouml;ras
+                      </li>
+                    </ul>
+                    <h3>Lagringstid</h3>
+                    <p>F&ouml;r evigt</p>
+                    <h3>Mottagare av personuppgifter</h3>
+                    <p>
+                      Vid ans&ouml;kningar och vid &auml;renden som kr&auml;ver
+                      myndighetsut&ouml;vning:
+                    </p>
+
+                    <ul>
+                      <li>Milj&ouml;kontoret, Sundsvalls kommun</li>
+                      <li>Skatteverket</li>
+                      <li>Kronofogdemyndigheten</li>
+                      <li>Folkh&auml;lsomyndigheten</li>
+                      <li>R&auml;ddningstj&auml;nsten Medelpad</li>
+                    </ul>
+
+                    <p>Vid &ouml;vriga &auml;renden:</p>
+
+                    <ul>
+                      <li>Enheten f&ouml;r serveringstillst&aring;nd</li>
+                    </ul>
+                    <h3>&Ouml;vriga upplysningar</h3>
+                    <p>
+                      Personuppgifterna som behandlas kan komma att delas till tredje part, om
+                      ansvarig n&auml;mnd &auml;r skyldig att g&ouml;ra s&aring; enligt lag.
+                      D&auml;remot kommer aldrig personuppgifterna att f&ouml;ras &ouml;ver till ett
+                      land utanf&ouml;r EU.
+                    </p>
+
+                    <p>Kontakta personuppgiftsansvarig n&auml;mnd om du vill:</p>
+
+                    <ul>
+                      <li>F&aring; ut information om de personuppgifter du l&auml;mnat in</li>
+                      <li>
+                        Beg&auml;ra r&auml;ttelse om du anser att n&aring;gon uppgift &auml;r fel
+                      </li>
+                      <li>Beg&auml;ra &ouml;verf&ouml;ring av uppgifter</li>
+                      <li>Beg&auml;ra att behandlingen av dina personuppgifter begr&auml;nsas</li>
+                      <li>G&ouml;ra inv&auml;ndningar</li>
+                      <li>Beg&auml;ra radering av dina uppgifter</li>
+                    </ul>
+                    <h3>L&auml;mna klagom&aring;l p&aring; personuppgiftshantering</h3>
+                    <p>
+                      Klagom&aring;l r&ouml;rande personuppgiftshanteringen i tj&auml;nsten kan
+                      l&auml;mnas till tillsynsmyndigheten, Datainspektionen. Bes&ouml;k
+                      Datainspektionens hemsida (<a
+                        href="https://www.datainspektionen.se/vagledningar/for-dig-som-privatperson/klagomal-och-tips/"
+                        >https://www.datainspektionen.se/vagledningar/for-dig-som-privatperson/klagomal-och-tips</a
+                      >) f&ouml;r mer information om hur du l&auml;mnar klagom&aring;l.
+                    </p>
+                    <h3>Personuppgiftsansvarig</h3>
+                    <p>
+                      Individ- och arbetsmarknadsn&auml;mnden<br />
+                      <a href="mailto:ian@sundsvall.se" title="Skicka e-post till: ian@sundsvall.se"
+                        >ian@sundsvall.se</a
+                      >
+                    </p>
+                  </section>
+                </div>
+                <div
+                  class="about-flow-extension full border-radius-small noexpander simplebox textcontent border"
+                >
+                  <h2 class="simplebox-title">
+                    <button
+                      id="simplebox-header-contact"
+                      class="simplebox-header"
+                      aria-expanded="false"
+                      aria-controls="simplebox-contact"
+                    >
+                      Fr&aring;gor om e-tj&auml;nsten
+                    </button>
+                  </h2>
+                  <section
+                    id="simplebox-contact"
+                    aria-labelledby="simplebox-header-contact"
+                    class="simplebox-content"
+                    style="display: none"
+                  >
+                    <p>
+                      Alkohol- och tobaksenheten<br />
+                      <a
+                        href="mailto:alkohol&amp;tobaksenheten@sundsvall.se"
+                        title="Skicka e-post till: alkohol&amp;tobaksenheten@sundsvall.se"
+                        >alkohol&amp;tobaksenheten@sundsvall.se</a
+                      >
+                      <br />
+                      <a href="tel:060-191000" title="Ring nummer: 060-191000">060-191000</a>
+                    </p>
+                  </section>
+                </div>
+              </div>
+            </div>
+            <div class="aside-inside start-flow-panel has-steps">
+              <div class="section yellow">
+                <h2 class="bordered">F&ouml;ljande beh&ouml;vs f&ouml;r e-tj&auml;nsten</h2>
+                <ul class="checklist textcontent">
+                  <li>Du m&aring;ste ha fyllt 20 &aring;r</li>
+                  <li>E-legitimation</li>
+                </ul>
+                <div class="btn-wrapper">
+                  <a
+                    class="btn btn-green xl full"
+                    href="/oversikt/flow/1478"
+                    aria-label="Starta e-tj&auml;nsten&nbsp;-&nbsp;Servering av alkoholdrycker"
+                    >Starta e-tj&auml;nsten</a
+                  >
+                </div>
+              </div>
+            </div>
+            <div class="section-full no-pad-tablet">
+              <h2 class="h1 hide-tablet">Du kommer att g&aring; igenom f&ouml;ljande steg:</h2>
+              <div class="service-navigator-wrap summary">
+                <div>
+                  <a
+                    data-icon-after="<"
+                    href="#"
+                    class="js-prev disabled"
+                    aria-label="F&ouml;reg&aring;ende"
+                    ><span>F&ouml;reg&aring;ende</span></a
+                  >
+                  <ol class="service-navigator primary navigated">
+                    <li>
+                      <span data-step="1">Kontaktuppgifter</span>
+                    </li>
+                    <li>
+                      <span data-step="2">Ans&ouml;kan/anm&auml;lan</span>
+                    </li>
+                    <li>
+                      <span data-step="3">F&ouml;rhandsgranska</span>
+                    </li>
+                    <li>
+                      <span data-step="4">Signera och skicka in</span>
+                    </li>
+                  </ol>
+                  <a data-icon-after=">" href="#" class="js-next" aria-label="N&auml;sta"
+                    ><span>N&auml;sta</span></a
+                  >
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+    <footer>
+      <div>
+        <ul>
+          <li>
+            <div class="footer-logo">
+              <a href="https://sundsvall.se" target="_blank"
+                ><img alt="Sundsvalls kommun" src="/images/footerlogo.svg"
+              /></a>
+            </div>
+          </li>
+          <li>
+            <div class="footer-text">
+              <h3>Kontakta oss</h3>
+              <p>
+                <a
+                  href="https://sundsvall.se/kommun-och-politik/mejla-sundsvalls-kommun---myndighetsbrevlador"
+                  target="_blank"
+                  >Myndighetsbrevl&aring;dor</a
+                >
+              </p>
+              <p>Telefon: <a href="tel:060191000">060-19 10 00</a></p>
+              <p>Organisationsnummer: 212000-2411</p>
+            </div>
+          </li>
+          <li>
+            <div class="footer-text">
+              <h3>Bes&ouml;k oss</h3>
+              <p>Sundsvalls kommun</p>
+              <p>Norrmalmsgatan 4, 851 85 Sundsvall</p>
+              <p>
+                Kommunhuset:
+                <a
+                  href="https://sundsvall.se/kommun-och-politik/kommunfakta/kommunhuset---oppettider-och-karta"
+                  target="_blank"
+                  >&Ouml;ppettider och karta</a
+                >
+              </p>
+            </div>
+          </li>
+          <div class="clear"></div>
+        </ul>
+      </div>
+      <div class="bottom">
+        <div id="footerwcag">
+          <a href="/hjalp/page/tillganglighet">Tillg&auml;nglighetsredog&ouml;relse</a>
+        </div>
+        <div id="footergdpr">
+          <a
+            href="https://sundsvall.se/kommun-och-politik/overklaga-beslut-rattssakerhet/behandling-av-personuppgifter"
+            target="_blank"
+            >Behandling av personuppgifter</a
+          >
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

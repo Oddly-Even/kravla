@@ -1,0 +1,6 @@
+dist/
+bun.lock
+packages/core/src/open-eplatform/__tests__/fixtures/
+scripts/extraction-fidelity/fixtures/
+data/
+packages/core/data/

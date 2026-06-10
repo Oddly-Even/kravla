@@ -1,0 +1,2061 @@
+<!doctype html>
+<html lang="sv" class="no-js">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <script>
+      document.documentElement.className = document.documentElement.className.replace(
+        /(\s|^)no-js(\s|$)/,
+        "$1js$2",
+      );
+    </script>
+
+    <script>
+      // Capture synchronous errors
+      window.onerror = function (message, file, row, column, error) {
+        const stack = error && error.stack ? error.stack : null;
+        sendErrorToLog({ message, file, row, column, stack });
+      };
+
+      // Capture asynchronous errors
+      window.addEventListener("unhandledrejection", function (event) {
+        const reason = event.reason || {};
+        const message = reason.message ? reason.message : String(reason);
+        const stack = reason.stack ? reason.stack : null;
+        sendErrorToLog({ message, stack });
+      });
+
+      // Send error to the server
+      function sendErrorToLog(error) {
+        const url = "/jserrorreceiver/";
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", url, true);
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhr.send(
+          [
+            "url=" + encodeURIComponent(window.location.href),
+            "logLevel=error",
+            "message=" + encodeURIComponent(error.message || ""),
+            "file=" + encodeURIComponent(error.file || ""),
+            "stack=" + encodeURIComponent(error.stack || ""),
+            "row=" + encodeURIComponent(error.row || ""),
+            "column=" + encodeURIComponent(error.column || ""),
+            "userAgent=" + encodeURIComponent(navigator.userAgent),
+          ].join("&"),
+        );
+      }
+    </script>
+    <meta name="google-site-verification" content="uvRqep_Tp220wkmaqGXxI1RLW89ds5CtCss5x3sicc8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="/wps/contenthandler/!ut/p/digest!nrKzWUWFe9aRqbRUXrjuLA/sp/mashup:ra:collection?soffset=0&amp;eoffset=11&amp;themeID=ZJ_89E4H2C0K81180A4N3VNEO00E1&amp;locale=sv&amp;locale=en&amp;mime-type=text%2Fcss&amp;lm=1780490533448&amp;entry=wp_toolbar_common__0.0%3Ahead_css&amp;entry=wp_dialog_css__0.0%3Ahead_css&amp;entry=module-theme-toolbar__1.0%3Ahead_css&amp;entry=wp_toolbar_common_actionbar__0.0%3Ahead_css&amp;entry=module-frontend-ui-framework__1.0%3Ahead_css&amp;entry=wp_simple_contextmenu_css__0.0%3Ahead_css&amp;entry=wp_toolbar_actionbar__0.0%3Ahead_css&amp;entry=gbg_theme__2.8.0%3Ahead_css&amp;entry=module-frontend-goteborg__0.0%3Ahead_css&amp;entry=wp_toolbar_projectmenu__0.0%3Ahead_css"
+      type="text/css"
+    />
+    <link
+      rel="alternate"
+      id="head_css_deferred"
+      href="/wps/contenthandler/!ut/p/digest!nrKzWUWFe9aRqbRUXrjuLA/sp/mashup:ra:collection?soffset=0&amp;eoffset=9&amp;themeID=ZJ_89E4H2C0K81180A4N3VNEO00E1&amp;locale=sv&amp;locale=en&amp;mime-type=text%2Fcss&amp;lm=1779339609307&amp;entry=wp_contextmenu_css__0.0%3Ahead_css&amp;entry=wp_draft_page_ribbon__0.0%3Ahead_css&amp;entry=wp_federated_documents_picker__0.0%3Ahead_css&amp;entry=wp_dnd_css__0.0%3Ahead_css&amp;entry=gbg_theme_edit__0.0%3Ahead_css&amp;entry=wp_status_bar__0.0%3Ahead_css&amp;entry=wcm_inplaceEdit__0.0%3Ahead_css&amp;entry=wp_content_targeting_cam__0.0%3Ahead_css&amp;deferred=true"
+    />
+    <script type="text/javascript">
+      var djConfig = {
+        baseUrl: "/wps/portal_dojo/v1.9/dojo/",
+        locale: "sv",
+        isDebug: false,
+        debugAtAllCosts: false,
+        parseOnLoad: false,
+        afterOnLoad: false,
+        has: { "dojo-bidi": true },
+        modulePaths: {
+          com: "/wps/themeModules/js/com",
+          ibm: "/wps/themeModules/js/ibm",
+          pagebuilder: "/wps/themeModules/modules/pagebuilder/js",
+          portalclient: "/wps/themeModules/modules/portalclient/js",
+          asa: "/wps/themeModules/modules/asa/js",
+          contentmapping: "/wps/themeModules/modules/contentmapping/js",
+          federation: "/wps/themeModules/modules/federation/js",
+        },
+      };
+      djConfig.locale = djConfig.locale.replace(/_/g, "-").replace(/iw/, "he").toLowerCase();
+      (function () {
+        if (typeof wpModules == "undefined") wpModules = {};
+        if (typeof wpModules.state == "undefined") wpModules.state = {};
+        if (typeof wpModules.state.page == "undefined") wpModules.state.page = {};
+        wpModules.state.page._initial = [
+          {
+            nsuri: "http://www.ibm.com/xmlns/prod/websphere/portal/publicparams",
+            name: "selection",
+            value: ["Z6_8G8GHCC021DRC060JMVDDI08V4"],
+          },
+          {
+            nsuri: "http://www.ibm.com/xmlns/prod/websphere/portal/publicparams",
+            name: "labelMappings",
+            value: ["Z6_8G8GHCC021DRC060JMVDDI08V4", "Z6_000000000000000000000000A0"],
+          },
+        ];
+        wpModules.state.page.selectionPath = [
+          "Z6_000000000000000000000000A0",
+          "Z6_M2C61H02OGC9F060QDQQP700O3",
+          "Z6_8G8GHCC021DRC060JMVDDI08V4",
+        ];
+        wpModules.state.page.supportsEditMode = true;
+        wpModules.state.page.supportsToolbar = true;
+        wpModules.state.page.path = "/wps/portal";
+        wpModules.state.page.protectedPath = "/wps/myportal";
+        wpModules.state.page.publicPath = "/wps/portal";
+      })();
+    </script>
+    <script
+      type="text/javascript"
+      src="/wps/contenthandler/!ut/p/digest!UN-2oEZqj6vVglGqevFm3g/mashup/ra:collection?themeID=ZJ_89E4H2C0K81180A4N3VNEO00E1&amp;locale=sv&amp;locale=en&amp;mime-type=text%2Fjavascript&amp;lm=1773670636000&amp;entry=wp_client_main__0.0%3Ahead_js&amp;entry=wp_client_ext__0.0%3Ahead_js&amp;entry=wp_client_logging__0.0%3Ahead_js&amp;entry=wp_client_tracing__0.0%3Ahead_js&amp;entry=wp_modules__0.0%3Ahead_js&amp;entry=wp_photon_dom__0.0%3Ahead_js&amp;entry=wp_toolbar_common__0.0%3Ahead_js&amp;entry=wp_dialog_util__0.0%3Ahead_js&amp;entry=wp_dialog_draggable__0.0%3Ahead_js&amp;entry=wp_dialog_main__0.0%3Ahead_js&amp;entry=wp_a11y__0.0%3Ahead_js&amp;entry=wp_state_page__0.0%3Ahead_js&amp;entry=wp_theme_utils__0.0%3Ahead_js&amp;entry=wp_toolbar_viewframe_validator__0.0%3Ahead_js"
+    ></script>
+    <link
+      rel="alternate"
+      id="head_js_deferred"
+      href="/wps/contenthandler/!ut/p/digest!UN-2oEZqj6vVglGqevFm3g/mashup/ra:collection?themeID=ZJ_89E4H2C0K81180A4N3VNEO00E1&amp;locale=sv&amp;locale=en&amp;mime-type=text%2Fjavascript&amp;lm=1773670632000&amp;entry=dojo_19__0.0%3Ahead_js&amp;entry=dojo_app_19__0.0%3Ahead_js&amp;entry=dojo_fx_19__0.0%3Ahead_js&amp;entry=dojo_dom_19__0.0%3Ahead_js&amp;entry=dojo_dnd_basic_19__0.0%3Ahead_js&amp;entry=dojo_data_19__0.0%3Ahead_js&amp;entry=dojo_selector_lite_19__0.0%3Ahead_js&amp;entry=dijit_19__0.0%3Ahead_js&amp;entry=dojo_dnd_ext_19__0.0%3Ahead_js&amp;entry=dijit_layout_basic_19__0.0%3Ahead_js&amp;entry=dojox_layout_basic_19__0.0%3Ahead_js&amp;entry=dijit_menu_19__0.0%3Ahead_js&amp;entry=dojo_fmt_19__0.0%3Ahead_js&amp;entry=dijit_tree_19__0.0%3Ahead_js&amp;entry=wp_dnd_namespace__0.0%3Ahead_js&amp;entry=wp_dnd_source__0.0%3Ahead_js&amp;entry=dijit_layout_ext_19__0.0%3Ahead_js&amp;entry=dijit_form_19__0.0%3Ahead_js&amp;entry=wp_client_selector__0.0%3Ahead_js&amp;entry=wp_client_dnd__0.0%3Ahead_js&amp;entry=wp_contextmenu_js__0.0%3Ahead_js&amp;entry=wp_dnd_target__0.0%3Ahead_js&amp;entry=wp_dnd_util__0.0%3Ahead_js&amp;entry=wcm_inplaceEdit__0.0%3Ahead_js&amp;deferred=true"
+    />
+    <link
+      id="C7e3QcRcs_3"
+      rel="alternate"
+      href="https://goteborg.se/wps/portal/start/!ut/p/z1/04_Sj9CPykssy0xPLMnMz0vMAfIjo8ziLdwt3D2cnQ2MDF2CnA3MDLx8w1xcPA0swkz0wwkpiAJKG-AAjgb6BbmhigAc3liT/"
+    />
+    <script type="text/javascript">
+      (function () {
+        var element = document.getElementById("C7e3QcRcs_3");
+        if (element) {
+          wpModules.theme.WindowUtils.baseURL.resolve(element.href);
+        }
+      })();
+    </script>
+    <base
+      href="https://goteborg.se/wps/portal/start/!ut/p/z1/04_Sj9CPykssy0xPLMnMz0vMAfIjo8ziLdwt3D2cnQ2MDF2CnA3MDLx8w1xcPA0swkz0wwkpiAJKG-AAjgb6BbmhigAc3liT/"
+    />
+
+    <title>Start - Göteborgs Stad</title>
+
+    <link
+      id="com.ibm.lotus.NavStateUrl"
+      rel="alternate"
+      href="/wps/portal/start/!ut/p/z1/04_Sj9CPykssy0xPLMnMz0vMAfIjo8ziLdwt3D2cnQ2MDF2CnA3MDLx8w1xcPA0swkz0wwkpiAJKG-AAjgb6BbmhigAc3liT/dz/d5/L2dJQSEvUUt3QS80TmxFL1o2XzhHOEdIQ0MwMjFEUkMwNjBKTVZEREkwOFY0/"
+    />
+    <!-- Fonts -->
+    <link
+      rel="preload"
+      href="https://microservices.goteborg.se/ua/frontend-assets/fonts/OpenSans/Light/OpenSans-Light.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="preload"
+      href="https://microservices.goteborg.se/ua/frontend-assets/fonts/OpenSans/Regular/OpenSans-Regular.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="preload"
+      href="https://microservices.goteborg.se/ua/frontend-assets/fonts/OpenSans/Semibold/OpenSans-Semibold.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="preload"
+      href="https://microservices.goteborg.se/ua/frontend-assets/fonts/OpenSans/Bold/OpenSans-Bold.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="preload"
+      href="https://microservices.goteborg.se/ua/frontend-assets/fonts/OpenSans/ExtraBold/OpenSans-ExtraBold.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin="anonymous"
+    />
+
+    <!-- Favicon -->
+    <link
+      rel="icon"
+      href="/wps/contenthandler/dav/fs-type1/common-resources/gbg/frontend-assets/favicons/favicon.ico"
+      sizes="any"
+    />
+    <link
+      rel="icon"
+      href="/wps/contenthandler/dav/fs-type1/common-resources/gbg/frontend-assets/favicons/favicon-512.svg"
+      type="image/svg+xml"
+    />
+    <link
+      rel="apple-touch-icon"
+      href="/wps/contenthandler/dav/fs-type1/common-resources/gbg/frontend-assets/favicons/favicon-180.png"
+    />
+
+    <meta name="visitOrigin" content="external" />
+    <meta name="matomoUserSegment" content="external-visitor" />
+
+    <link rel="canonical" href="https://goteborg.se/wps/portal?uri=gbglnk%3aGBG.Inv" />
+
+    <meta name="siteimprove-url" content="/wps/portal/start" />
+    <!-- og-tags -->
+    <meta property="og:title" content="Start" />
+
+    <meta
+      property="og:image"
+      content="https://goteborg.se/wps/contenthandler/dav/fs-type1/common-resources/gbg/frontend-assets/images/logo-share.png"
+    />
+
+    <meta name="contentowner" content="Webbstrategiska" />
+
+    <meta
+      name="description"
+      content="goteborg.se är Göteborgs Stads officiella webbplats. Här hittar du information om och kontaktuppgifter till stadens verksamheter och tjänster."
+    />
+
+    <meta name="granskad" content="2025-11-17" />
+    <!-- RSS autodiscovery -->
+    <link
+      rel="alternate"
+      type="application/atom+xml"
+      title="RSS-flöde för aktuellt från Göteborgs Stad"
+      href="/wps/wcm/connect/Portal+Site/Aktuellt/?srv=cmpnt&source=library&cmpntname=goteborg-design/aktuelltarkiv/aktuelltarkiv-rss-lank"
+    />
+    <!-- Whitespace Matomo Tag Manager -->
+    <script>
+      var _mtm = (window._mtm = window._mtm || []);
+      _mtm.push({ "mtm.startTime": new Date().getTime(), event: "mtm.Start" });
+      (function () {
+        var d = document,
+          g = d.createElement("script"),
+          s = d.getElementsByTagName("script")[0];
+        g.async = true;
+        g.src = "https://webbplatsanalys.goteborg.se/js/container_zr2mMhHN.js";
+        s.parentNode.insertBefore(g, s);
+      })();
+    </script>
+    <!-- End Whitespace Matomo Tag Manager -->
+  </head>
+  <body class="lotusui30dojo">
+    <div class="o-site-wrapper wpthemeFrame">
+      <header class="c-header-gbg">
+        <a class="c-skip" href="#main">Till sidans huvudinnehåll</a>
+        <!-- aktiveras när flaggan för olika nätvärk är satt -->
+        <div class="c-header-gbg__inner">
+          <div class="c-header-gbg__content">
+            <a href="/wps/portal/start">
+              <img
+                class="c-header-gbg__logo"
+                src="/wps/contenthandler/dav/fs-type1/common-resources/gbg/frontend-assets/images/logo-gbg.svg"
+                alt="Göteborgs Stad"
+              />
+            </a>
+          </div>
+          <nav class="c-header-gbg__nav" aria-label="Sök eller meny">
+            <div class="c-header-gbg__button-wrapper">
+              <button class="c-header-gbg__button c-header-gbg__button--search">
+                <svg focusable="false" aria-hidden="true" class="c-icon c-icon--medium">
+                  <use
+                    xlink:href="/wps/contenthandler/dav/fs-type1/common-resources/gbg/frontend-assets/icons/icon-sprite.svg#magnify"
+                  ></use>
+                  <use
+                    xlink:href="/wps/contenthandler/dav/fs-type1/common-resources/gbg/frontend-assets/icons/icon-sprite.svg#cross"
+                  ></use>
+                </svg>
+              </button>
+            </div>
+            <div class="c-header-gbg__button-wrapper">
+              <button class="c-header-gbg__button c-header-gbg__button--navigation">
+                <svg focusable="false" aria-hidden="true" class="c-icon c-icon--medium">
+                  <use
+                    xlink:href="/wps/contenthandler/dav/fs-type1/common-resources/gbg/frontend-assets/icons/icon-sprite.svg#menu"
+                  ></use>
+                  <use
+                    xlink:href="/wps/contenthandler/dav/fs-type1/common-resources/gbg/frontend-assets/icons/icon-sprite.svg#cross"
+                  ></use>
+                </svg>
+              </button>
+            </div>
+          </nav>
+        </div>
+        <div class="wpthemeStatusBarContainerWrapper">
+          <div class="wpthemeInner">
+            <div id="wpthemeStatusBarContainer" class="wpthemeStatusBarContainer"></div>
+          </div>
+        </div>
+      </header>
+      <nav class="c-header-menu c-header-menu--navigation" aria-label="Huvudnavigering">
+        <div class="c-header-menu__inner">
+          <div class="c-header-menu__main">
+            <ul class="c-header-menu__list c-list c-list--divider">
+              <li>
+                <a href="/wps/portal/start/forskola-och-utbildning">Förskola och utbildning</a>
+              </li>
+
+              <li><a href="/wps/portal/start/uppleva-och-gora">Uppleva och göra</a></li>
+
+              <li>
+                <a href="/wps/portal/start/foretag-och-organisationer"
+                  >Företag och organisationer</a
+                >
+              </li>
+
+              <li><a href="/wps/portal/start/omsorg-och-stod">Omsorg och stöd</a></li>
+
+              <li>
+                <a href="/wps/portal/start/bygga-bo-och-leva-hallbart"
+                  >Bygga, bo och leva hållbart</a
+                >
+              </li>
+
+              <li><a href="/wps/portal/start/trafik-och-resor">Trafik och resor</a></li>
+
+              <li><a href="/wps/portal/start/jobba-i-goteborgs-stad">Jobba i Göteborgs Stad</a></li>
+
+              <li><a href="/wps/portal/start/kommun-och-politik">Kommun och politik</a></li>
+
+              <li><a href="/wps/portal/start/goteborg-vaxer">Göteborg växer</a></li>
+            </ul>
+          </div>
+          <div class="c-header-menu__aside">
+            <a class="c-header-menu__aside-link" href="/wps/myportal/start/mina-sidor">
+              <span class="c-header-menu__aside-icon">
+                <svg focusable="false" aria-hidden="true" class="c-icon">
+                  <use
+                    href="/wps/contenthandler/dav/fs-type1/common-resources/gbg/frontend-assets/icons/icon-sprite.svg#avatar"
+                  />
+                </svg>
+              </span>
+              Mina sidor
+            </a>
+            <span class="c-header-menu__aside-text"
+              >Logga in med e-legitimation för att se ärenden och tjänster du har med Göteborgs
+              Stad. Du kan även se fakturor och autogiro.</span
+            >
+          </div>
+        </div>
+      </nav>
+      <div class="c-header-menu c-header-menu--search">
+        <div class="c-header-menu__inner">
+          <div class="c-header-menu__main">
+            <div class="c-header-menu__search t-space-bottom-m">
+              <div class="c-form-item c-form-item--full-width">
+                <label
+                  for="cludo-input-search"
+                  class="c-form-item__label t-h1 t-space-bottom-ml t-space-top-m"
+                  >Sök på goteborg.se</label
+                >
+                <form
+                  role="search"
+                  action="/wps/portal/sok"
+                  class="cludo-input-form"
+                  id="cludo-header-search"
+                >
+                  <input
+                    class="cludo-input-form__input c-input-text"
+                    id="cludo-input-search"
+                    title="Ange sökord"
+                    name="searchrequest"
+                    type="search"
+                    autocomplete="off"
+                    placeholder="Ange sökord"
+                    aria-autocomplete="list"
+                    aria-haspopup="true"
+                  />
+                  <button
+                    type="submit"
+                    title="Sök"
+                    class="cludo-input-form__search-button c-button c-button--primary t-space-left-m t-space-right-none"
+                  >
+                    Sök
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+          <div class="c-header-menu__aside">
+            <h2 class="c-header-menu__aside-title">Vanliga sökningar</h2>
+            <a href="/wps/portal?uri=gbglnk%3a201710184350336" class="c-header-menu__aside-link"
+              >Visa fakturor</a
+            ><a
+              href="/wps/portal?uri=gbglnk%3agbg.page.b4d7866c-687f-452c-a3c5-94879c898260"
+              class="c-header-menu__aside-link"
+              >Bygglov</a
+            ><a
+              href="/wps/portal?uri=gbglnk%3agbg.page.56f03f09-45ef-4ddc-9639-adf95afd91c6"
+              class="c-header-menu__aside-link"
+              >Lediga jobb</a
+            ><a href="/wps/myportal/start/mina-sidor" class="c-header-menu__aside-link"
+              >Mina sidor</a
+            ><a
+              href="/wps/portal?uri=gbglnk%3aGBG.Inv.TopNav.Bibliotek"
+              class="c-header-menu__aside-link"
+              >Bibliotek</a
+            >
+          </div>
+        </div>
+      </div>
+
+      <div class="o-layout">
+        <div class="o-layout__head"></div>
+        <div class="o-layout__body" id="layout-container">
+          <div id="main" class="page-area wpthemeMainContent">
+            <div style="display: none" id="portletState">{}</div>
+            <div
+              id="layoutContainers"
+              class="wpthemeLayoutContainers wpthemeLayoutContainersHidden"
+            >
+              <!--Start innehåll-->
+              <!-- LAYOUT TEMPLATE START -->
+              <div class="hiddenWidgetsDiv">
+                <!-- widgets in this container are hidden in the UI by default -->
+                <div
+                  class="component-container ibmDndRow hiddenWidgetsContainer wpthemeFull id-Z7_I59LDTNSUJ4BP4N3R88K1OLU51"
+                  name="ibmHiddenWidgets"
+                ></div>
+                <div style="clear: both"></div>
+              </div>
+              <main class="o-layout__main o-layout__main--1-wide-1-white-1-grey">
+                <div
+                  class="component-container o-layout__component-container wpthemeCol ibmDndColumn id-Z7_LCOHAB9T3SEFJHSN1786L8SPG1"
+                  name="ibmMainContainer"
+                >
+                  <div class="component-control id-Z7_8G8GHCC02PLC506OCKUTMJ1PQ2">
+                    <!-- #sidblock: Ingångsblock-->
+
+                    <div class="c-hero">
+                      <div class="c-image c-image--crop">
+                        <div class="c-image__crop-container">
+                          <div class="c-image__image-container">
+                            <picture>
+                              <source
+                                media="(min-width:432px) and (max-width:1536px)"
+                                srcset="
+                                  /dx/api/dam/v1/collections/914eee87-0c1a-4b1c-8b18-a45bee676344/items/99ded855-1f28-470b-9b03-7083193b120e/renditions/bd95f3a3-c012-4261-af3b-3818b4f36089?binary=true
+                                "
+                              />
+                              <source
+                                media="(min-width:1537px)"
+                                srcset="
+                                  /dx/api/dam/v1/collections/914eee87-0c1a-4b1c-8b18-a45bee676344/items/99ded855-1f28-470b-9b03-7083193b120e/renditions/bd4cd086-0bcb-49bc-b4f2-82670d13056a?binary=true
+                                "
+                              />
+                              <img
+                                class="c-image__image"
+                                alt="Sjömanshustrun med hamninloppet nedanför. Foto: Lo Birgersson"
+                                src="/dx/api/dam/v1/collections/914eee87-0c1a-4b1c-8b18-a45bee676344/items/99ded855-1f28-470b-9b03-7083193b120e/renditions/8b2affe9-1759-4906-9443-242f80dc75dc?binary=true"
+                              />
+                            </picture>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="c-hero__content c-hero__content--blue">
+                        <div class="c-hero__content-inner">
+                          <h1 class="c-hero__heading" data-hyphen-check>
+                            Välkommen till Göteborgs Stad
+                          </h1>
+
+                          <div class="c-hero__buttons">
+                            <a
+                              class="c-button c-button--white"
+                              href="/wps/portal?uri=gbglnk%3a202522082722276"
+                              >Sök sommarvikariat</a
+                            >
+
+                            <a
+                              class="c-button c-button--white"
+                              href="/wps/portal?uri=gbglnk%3agbg.page.56f03f09-45ef-4ddc-9639-adf95afd91c6"
+                              >Lediga jobb</a
+                            >
+
+                            <a
+                              class="c-button c-button--white"
+                              href="/wps/portal?uri=gbglnk%3agbg.page.958c1144-4ba5-4a68-ada6-46b0484aa9c4"
+                              >Kontakta oss</a
+                            >
+
+                            <a
+                              class="c-button c-button--white"
+                              href="/wps/portal?uri=gbglnk%3akalendarium-ck"
+                              >Hitta aktiviteter</a
+                            >
+
+                            <a
+                              class="c-button c-button--white"
+                              href="/wps/myportal/start/mina-sidor"
+                              >Mina sidor</a
+                            >
+
+                            <a
+                              class="c-button c-button--white"
+                              href="/wps/portal?uri=gbglnk%3a20120912-1056"
+                              >Handlingar och protokoll</a
+                            >
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="component-container o-layout__component-container o-layout__component-container--max-width wpthemeCol ibmDndColumn id-Z7_GGJI2SHESQK6SAKHH4S95RQ422"
+                  name="zone-1"
+                >
+                  <div class="component-control id-Z7_IA2C144121MHD06CR5JRN5IUC6">
+                    <!-- #sidblock: Fokusblock-->
+                  </div>
+                  <div class="component-control id-Z7_8G8GHCC021DRC060JMVDDI0O23">
+                    <div class="o-grid">
+                      <div
+                        class="o-grid__column o-grid__column--stretch"
+                        data-size="4/4 4/8@m 4/12@l"
+                      >
+                        <div
+                          class="c-navigation-tile c-navigation-tile--bordercolor-purple c-navigation-tile--bg-purple-lightest"
+                        >
+                          <a
+                            href="/wps/portal/start/forskola-och-utbildning"
+                            class="c-navigation-tile__head"
+                          >
+                            <h2 class="c-navigation-tile__title" data-hyphen-check>
+                              Förskola och utbildning
+                            </h2>
+                          </a>
+
+                          <ul class="c-navigation-tile__list">
+                            <li class="c-navigation-tile__list-item">
+                              <a
+                                href="/wps/portal/start/forskola-och-utbildning/forskola-och-pedagogisk-omsorg"
+                                class="c-navigation-tile__list-link"
+                                >Förskola och pedagogisk omsorg</a
+                              >
+                            </li>
+
+                            <li class="c-navigation-tile__list-item">
+                              <a
+                                href="/wps/portal/start/forskola-och-utbildning/grundskola"
+                                class="c-navigation-tile__list-link"
+                                >Förskoleklass, grundskola och anpassad grundskola</a
+                              >
+                            </li>
+
+                            <li class="c-navigation-tile__list-item">
+                              <a
+                                href="/wps/portal/start/forskola-och-utbildning/gymnasieskola"
+                                class="c-navigation-tile__list-link"
+                                >Gymnasieskola och anpassad gymnasieskola</a
+                              >
+                            </li>
+
+                            <li class="c-navigation-tile__list-item">
+                              <a
+                                href="/wps/portal/start/forskola-och-utbildning/vuxenutbildning"
+                                class="c-navigation-tile__list-link"
+                                >Vuxenutbildning</a
+                              >
+                            </li>
+                          </ul>
+
+                          <a
+                            class="c-navigation-tile__showmore-link"
+                            href="/wps/portal/start/forskola-och-utbildning"
+                          >
+                            Visa alla
+                            <span class="t-visually-hidden">inom Förskola och utbildning</span>
+                            (6)
+                          </a>
+                        </div>
+                      </div>
+
+                      <div
+                        class="o-grid__column o-grid__column--stretch"
+                        data-size="4/4 4/8@m 4/12@l"
+                      >
+                        <div
+                          class="c-navigation-tile c-navigation-tile--bordercolor-green c-navigation-tile--bg-green-lightest"
+                        >
+                          <a
+                            href="/wps/portal/start/uppleva-och-gora"
+                            class="c-navigation-tile__head"
+                          >
+                            <h2 class="c-navigation-tile__title" data-hyphen-check>
+                              Uppleva och göra
+                            </h2>
+                          </a>
+
+                          <ul class="c-navigation-tile__list">
+                            <li class="c-navigation-tile__list-item">
+                              <a
+                                href="/wps/portal/start/uppleva-och-gora/bibliotek"
+                                class="c-navigation-tile__list-link"
+                                >Bibliotek</a
+                              >
+                            </li>
+
+                            <li class="c-navigation-tile__list-item">
+                              <a
+                                href="/wps/portal/start/uppleva-och-gora/idrott-motion-och-friluftsliv"
+                                class="c-navigation-tile__list-link"
+                                >Idrott, motion och friluftsliv</a
+                              >
+                            </li>
+
+                            <li class="c-navigation-tile__list-item">
+                              <a
+                                href="/wps/portal/start/uppleva-och-gora/evenemang-och-turistinformation"
+                                class="c-navigation-tile__list-link"
+                                >Evenemang och turistinformation</a
+                              >
+                            </li>
+
+                            <li class="c-navigation-tile__list-item">
+                              <a
+                                href="/wps/portal/start/uppleva-och-gora/kultur"
+                                class="c-navigation-tile__list-link"
+                                >Kultur</a
+                              >
+                            </li>
+                          </ul>
+
+                          <a
+                            class="c-navigation-tile__showmore-link"
+                            href="/wps/portal/start/uppleva-och-gora"
+                          >
+                            Visa alla
+                            <span class="t-visually-hidden">inom Uppleva och göra</span>
+                            (9)
+                          </a>
+                        </div>
+                      </div>
+
+                      <div
+                        class="o-grid__column o-grid__column--stretch"
+                        data-size="4/4 4/8@m 4/12@l"
+                      >
+                        <div
+                          class="c-navigation-tile c-navigation-tile--bordercolor-pink c-navigation-tile--bg-pink-lightest"
+                        >
+                          <a
+                            href="/wps/portal/start/foretag-och-organisationer"
+                            class="c-navigation-tile__head"
+                          >
+                            <h2 class="c-navigation-tile__title" data-hyphen-check>
+                              Företag och organisationer
+                            </h2>
+                          </a>
+
+                          <ul class="c-navigation-tile__list">
+                            <li class="c-navigation-tile__list-item">
+                              <a
+                                href="/wps/portal/start/foretag-och-organisationer/starta-driva-och-etablera-foretag"
+                                class="c-navigation-tile__list-link"
+                                >Starta, driva och etablera företag</a
+                              >
+                            </li>
+
+                            <li class="c-navigation-tile__list-item">
+                              <a
+                                href="/wps/portal/start/foretag-och-organisationer/tillstand-och-regler"
+                                class="c-navigation-tile__list-link"
+                                >Tillstånd och regler</a
+                              >
+                            </li>
+
+                            <li class="c-navigation-tile__list-item">
+                              <a
+                                href="/wps/portal/start/foretag-och-organisationer/upphandling-och-inkop"
+                                class="c-navigation-tile__list-link"
+                                >Upphandling och inköp</a
+                              >
+                            </li>
+
+                            <li class="c-navigation-tile__list-item">
+                              <a
+                                href="/wps/portal/start/foretag-och-organisationer/foreningar"
+                                class="c-navigation-tile__list-link"
+                                >Föreningar och organisationer</a
+                              >
+                            </li>
+                          </ul>
+
+                          <a
+                            class="c-navigation-tile__showmore-link"
+                            href="/wps/portal/start/foretag-och-organisationer"
+                          >
+                            Visa alla
+                            <span class="t-visually-hidden">inom Företag och organisationer</span>
+                            (4)
+                          </a>
+                        </div>
+                      </div>
+
+                      <div
+                        class="o-grid__column o-grid__column--stretch"
+                        data-size="4/4 4/8@m 4/12@l"
+                      >
+                        <div
+                          class="c-navigation-tile c-navigation-tile--bordercolor-purple c-navigation-tile--bg-purple-lightest"
+                        >
+                          <a
+                            href="/wps/portal/start/omsorg-och-stod"
+                            class="c-navigation-tile__head"
+                          >
+                            <h2 class="c-navigation-tile__title" data-hyphen-check>
+                              Omsorg och stöd
+                            </h2>
+                          </a>
+
+                          <ul class="c-navigation-tile__list">
+                            <li class="c-navigation-tile__list-item">
+                              <a
+                                href="/wps/portal/start/omsorg-och-stod/kontakt-for-akut-hjalp"
+                                class="c-navigation-tile__list-link"
+                                >Kontakt för akut hjälp</a
+                              >
+                            </li>
+
+                            <li class="c-navigation-tile__list-item">
+                              <a
+                                href="/wps/portal/start/omsorg-och-stod/hitta-socialkontor"
+                                class="c-navigation-tile__list-link"
+                                >Hitta socialkontor</a
+                              >
+                            </li>
+
+                            <li class="c-navigation-tile__list-item">
+                              <a
+                                href="/wps/portal/start/omsorg-och-stod/ekonomi-och-ekonomiskt-bistand"
+                                class="c-navigation-tile__list-link"
+                                >Ekonomi och ekonomiskt bistånd</a
+                              >
+                            </li>
+
+                            <li class="c-navigation-tile__list-item">
+                              <a
+                                href="/wps/portal/start/omsorg-och-stod/familj-barn-och-ungdom"
+                                class="c-navigation-tile__list-link"
+                                >Familj, barn och ungdom</a
+                              >
+                            </li>
+                          </ul>
+
+                          <a
+                            class="c-navigation-tile__showmore-link"
+                            href="/wps/portal/start/omsorg-och-stod"
+                          >
+                            Visa alla
+                            <span class="t-visually-hidden">inom Omsorg och stöd</span>
+                            (20)
+                          </a>
+                        </div>
+                      </div>
+
+                      <div
+                        class="o-grid__column o-grid__column--stretch"
+                        data-size="4/4 4/8@m 4/12@l"
+                      >
+                        <div
+                          class="c-navigation-tile c-navigation-tile--bordercolor-purple c-navigation-tile--bg-purple-lightest"
+                        >
+                          <a
+                            href="/wps/portal/start/bygga-bo-och-leva-hallbart"
+                            class="c-navigation-tile__head"
+                          >
+                            <h2 class="c-navigation-tile__title" data-hyphen-check>
+                              Bygga, bo och leva hållbart
+                            </h2>
+                          </a>
+
+                          <ul class="c-navigation-tile__list">
+                            <li class="c-navigation-tile__list-item">
+                              <a
+                                href="/wps/portal/start/bygga-bo-och-leva-hallbart/vattenlackor-elavbrott-och-andra-storningar"
+                                class="c-navigation-tile__list-link"
+                                >Vattenläckor, elavbrott och andra störningar</a
+                              >
+                            </li>
+
+                            <li class="c-navigation-tile__list-item">
+                              <a
+                                href="/wps/portal/start/bygga-bo-och-leva-hallbart/bygga-riva-och-forandra"
+                                class="c-navigation-tile__list-link"
+                                >Bygga, riva och förändra</a
+                              >
+                            </li>
+
+                            <li class="c-navigation-tile__list-item">
+                              <a
+                                href="/wps/portal/start/bygga-bo-och-leva-hallbart/avfall-och-atervinning"
+                                class="c-navigation-tile__list-link"
+                                >Avfall och återvinning</a
+                              >
+                            </li>
+
+                            <li class="c-navigation-tile__list-item">
+                              <a
+                                href="/wps/portal/start/bygga-bo-och-leva-hallbart/vatten-och-avlopp"
+                                class="c-navigation-tile__list-link"
+                                >Vatten och avlopp</a
+                              >
+                            </li>
+                          </ul>
+
+                          <a
+                            class="c-navigation-tile__showmore-link"
+                            href="/wps/portal/start/bygga-bo-och-leva-hallbart"
+                          >
+                            Visa alla
+                            <span class="t-visually-hidden">inom Bygga, bo och leva hållbart</span>
+                            (11)
+                          </a>
+                        </div>
+                      </div>
+
+                      <div
+                        class="o-grid__column o-grid__column--stretch"
+                        data-size="4/4 4/8@m 4/12@l"
+                      >
+                        <div
+                          class="c-navigation-tile c-navigation-tile--bordercolor-purple c-navigation-tile--bg-purple-lightest"
+                        >
+                          <a
+                            href="/wps/portal/start/trafik-och-resor"
+                            class="c-navigation-tile__head"
+                          >
+                            <h2 class="c-navigation-tile__title" data-hyphen-check>
+                              Trafik och resor
+                            </h2>
+                          </a>
+
+                          <ul class="c-navigation-tile__list">
+                            <li class="c-navigation-tile__list-item">
+                              <a
+                                href="/wps/portal/start/trafik-och-resor/parkering"
+                                class="c-navigation-tile__list-link"
+                                >Parkering</a
+                              >
+                            </li>
+
+                            <li class="c-navigation-tile__list-item">
+                              <a
+                                href="/wps/portal/start/trafik-och-resor/fardtjanst"
+                                class="c-navigation-tile__list-link"
+                                >Färdtjänst</a
+                              >
+                            </li>
+
+                            <li class="c-navigation-tile__list-item">
+                              <a
+                                href="/wps/portal/start/trafik-och-resor/trafik-och-gator"
+                                class="c-navigation-tile__list-link"
+                                >Trafik och gator</a
+                              >
+                            </li>
+
+                            <li class="c-navigation-tile__list-item">
+                              <a
+                                href="/wps/portal/start/trafik-och-resor/kollektivtrafik"
+                                class="c-navigation-tile__list-link"
+                                >Kollektivtrafik</a
+                              >
+                            </li>
+                          </ul>
+
+                          <a
+                            class="c-navigation-tile__showmore-link"
+                            href="/wps/portal/start/trafik-och-resor"
+                          >
+                            Visa alla
+                            <span class="t-visually-hidden">inom Trafik och resor</span>
+                            (6)
+                          </a>
+                        </div>
+                      </div>
+
+                      <div
+                        class="o-grid__column o-grid__column--stretch"
+                        data-size="4/4 4/8@m 4/12@l"
+                      >
+                        <div
+                          class="c-navigation-tile c-navigation-tile--bordercolor-dark-blue c-navigation-tile--bg-dark-blue-lightest"
+                        >
+                          <a
+                            href="/wps/portal/start/jobba-i-goteborgs-stad"
+                            class="c-navigation-tile__head"
+                          >
+                            <h2 class="c-navigation-tile__title" data-hyphen-check>
+                              Jobba i Göteborgs Stad
+                            </h2>
+                          </a>
+
+                          <ul class="c-navigation-tile__list">
+                            <li class="c-navigation-tile__list-item">
+                              <a
+                                href="/wps/portal/start/jobba-i-goteborgs-stad/lediga-jobb"
+                                class="c-navigation-tile__list-link"
+                                >Lediga jobb i Göteborgs Stad</a
+                              >
+                            </li>
+
+                            <li class="c-navigation-tile__list-item">
+                              <a
+                                href="/wps/portal/start/jobba-i-goteborgs-stad/vara-yrkesomraden"
+                                class="c-navigation-tile__list-link"
+                                >Våra yrkesområden</a
+                              >
+                            </li>
+
+                            <li class="c-navigation-tile__list-item">
+                              <a
+                                href="/wps/portal/start/jobba-i-goteborgs-stad/sa-ar-det-att-jobba-hos-oss"
+                                class="c-navigation-tile__list-link"
+                                >Så är det att jobba i Göteborgs Stad</a
+                              >
+                            </li>
+
+                            <li class="c-navigation-tile__list-item">
+                              <a
+                                href="/wps/portal/start/jobba-i-goteborgs-stad/mot-medarbetare"
+                                class="c-navigation-tile__list-link"
+                                >Möt medarbetare</a
+                              >
+                            </li>
+                          </ul>
+
+                          <a
+                            class="c-navigation-tile__showmore-link"
+                            href="/wps/portal/start/jobba-i-goteborgs-stad"
+                          >
+                            Visa alla
+                            <span class="t-visually-hidden">inom Jobba i Göteborgs Stad</span>
+                            (8)
+                          </a>
+                        </div>
+                      </div>
+
+                      <div
+                        class="o-grid__column o-grid__column--stretch"
+                        data-size="4/4 4/8@m 4/12@l"
+                      >
+                        <div
+                          class="c-navigation-tile c-navigation-tile--bordercolor-dark-blue c-navigation-tile--bg-dark-blue-lightest"
+                        >
+                          <a
+                            href="/wps/portal/start/kommun-och-politik"
+                            class="c-navigation-tile__head"
+                          >
+                            <h2 class="c-navigation-tile__title" data-hyphen-check>
+                              Kommun och politik
+                            </h2>
+                          </a>
+
+                          <ul class="c-navigation-tile__list">
+                            <li class="c-navigation-tile__list-item">
+                              <a
+                                href="/wps/portal/start/kommun-och-politik/kommunens-organisation"
+                                class="c-navigation-tile__list-link"
+                                >Kommunens organisation</a
+                              >
+                            </li>
+
+                            <li class="c-navigation-tile__list-item">
+                              <a
+                                href="/wps/portal/start/kommun-och-politik/goteborgs-stads-anslagstavla"
+                                class="c-navigation-tile__list-link"
+                                >Göteborgs Stads anslagstavla</a
+                              >
+                            </li>
+
+                            <li class="c-navigation-tile__list-item">
+                              <a
+                                href="/wps/portal/start/kommun-och-politik/handlingar-och-protokoll"
+                                class="c-navigation-tile__list-link"
+                                >Handlingar och protokoll</a
+                              >
+                            </li>
+
+                            <li class="c-navigation-tile__list-item">
+                              <a
+                                href="/wps/portal/start/kommun-och-politik/om-goteborg"
+                                class="c-navigation-tile__list-link"
+                                >Om Göteborg</a
+                              >
+                            </li>
+                          </ul>
+
+                          <a
+                            class="c-navigation-tile__showmore-link"
+                            href="/wps/portal/start/kommun-och-politik"
+                          >
+                            Visa alla
+                            <span class="t-visually-hidden">inom Kommun och politik</span>
+                            (14)
+                          </a>
+                        </div>
+                      </div>
+
+                      <div
+                        class="o-grid__column o-grid__column--stretch"
+                        data-size="4/4 4/8@m 4/12@l"
+                      >
+                        <div
+                          class="c-navigation-tile c-navigation-tile--bordercolor-turquoise c-navigation-tile--bg-turquoise-lightest"
+                        >
+                          <a
+                            href="/wps/portal/start/goteborg-vaxer"
+                            class="c-navigation-tile__head"
+                          >
+                            <h2 class="c-navigation-tile__title" data-hyphen-check>
+                              Göteborg växer
+                            </h2>
+                          </a>
+
+                          <ul class="c-navigation-tile__list">
+                            <li class="c-navigation-tile__list-item">
+                              <a
+                                href="/wps/portal/start/goteborg-vaxer/alla-nyheter-om-hur-staden-utvecklas"
+                                class="c-navigation-tile__list-link"
+                                >Alla nyheter om hur staden utvecklas</a
+                              >
+                            </li>
+
+                            <li class="c-navigation-tile__list-item">
+                              <a
+                                href="/wps/portal/start/goteborg-vaxer/hitta-projekt"
+                                class="c-navigation-tile__list-link"
+                                >Hitta projekt</a
+                              >
+                            </li>
+
+                            <li class="c-navigation-tile__list-item">
+                              <a
+                                href="/wps/portal/start/goteborg-vaxer/tidslinje-for-stadsutvecklingsprojekt-goteborg"
+                                class="c-navigation-tile__list-link"
+                                >Tidslinje för stadsutvecklingsprojekt i Göteborg</a
+                              >
+                            </li>
+
+                            <li class="c-navigation-tile__list-item">
+                              <a
+                                href="/wps/portal/start/goteborg-vaxer/sa-planeras-staden"
+                                class="c-navigation-tile__list-link"
+                                >Så planeras staden</a
+                              >
+                            </li>
+                          </ul>
+
+                          <a
+                            class="c-navigation-tile__showmore-link"
+                            href="/wps/portal/start/goteborg-vaxer"
+                          >
+                            Visa alla
+                            <span class="t-visually-hidden">inom Göteborg växer</span>
+                            (8)
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="component-container o-layout__component-container o-layout__component-container--bg-grey o-layout__component-container--max-width wpthemeCol ibmDndColumn id-Z7_C8AM317RAHVLRMVG7GMII5ENC6"
+                  name="zone-2"
+                >
+                  <div class="component-control id-Z7_8G8GHCC029D3D06OQNAM701QT4">
+                    <!-- #sidblock: Fokusblock-->
+
+                    <div class="c-heading">
+                      <h2 class="c-heading__title">I fokus just nu</h2>
+                    </div>
+
+                    <div class="o-grid" data-matomo="focus-highlights">
+                      <div
+                        class="o-grid__column o-grid__column--stretch"
+                        data-size="4/4 4/8@l"
+                        data-id="4d782727-7897-4d80-9f3c-1e30357a89c7"
+                      >
+                        <div class="c-communication c-communication--bgcolor-yellow-light">
+                          <div
+                            class="c-communication__image c-image c-image--crop c-image--ratio-16by9"
+                          >
+                            <div class="c-image__crop-container">
+                              <div class="c-image__image-container">
+                                <picture>
+                                  <source
+                                    media="(min-width: 469px)"
+                                    srcset="
+                                      /dx/api/dam/v1/collections/46685fec-41bd-439d-9a26-c5b3c5a794d9/items/e4c83912-2287-4580-8d64-a96c79d291b0/renditions/4de43fe8-402f-4220-a798-8fc6bd6ef55e?binary=true
+                                    "
+                                  />
+                                  <img
+                                    class="c-image__image"
+                                    alt="Färgglad illustration av Poseidon"
+                                    src="/dx/api/dam/v1/collections/46685fec-41bd-439d-9a26-c5b3c5a794d9/items/e4c83912-2287-4580-8d64-a96c79d291b0/renditions/f99d42d2-4be2-46c4-9679-508121b76527?binary=true"
+                                    loading="lazy"
+                                  />
+                                </picture>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="c-communication__content">
+                            <div class="c-communication__content-inner">
+                              <h3 class="c-communication__heading">
+                                <a
+                                  class="c-communication__heading-link"
+                                  href="/wps/portal?uri=gbglnk%3a2026327103053700"
+                                  >Träffa Göteborgs Stad på West Pride</a
+                                >
+                              </h3>
+                              <p class="c-communication__paragraph">
+                                Göteborgs Stad deltar i festivalen på flera sätt och färgar staden i
+                                regnbågens alla färger. Läs mer om hur du kan träffa oss, delta i
+                                aktiviteter och diskutera mänskliga rättigheter, inkludering och
+                                allas lika värde.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div
+                        class="o-grid__column o-grid__column--stretch"
+                        data-size="4/4 4/8@l"
+                        data-id="bbdaa4d4-c3ef-48f1-9e69-f6b5bc0246c0"
+                      >
+                        <div class="c-communication c-communication--bgcolor-blue-light">
+                          <div
+                            class="c-communication__image c-image c-image--crop c-image--ratio-16by9"
+                          >
+                            <div class="c-image__crop-container">
+                              <div class="c-image__image-container">
+                                <picture>
+                                  <source
+                                    media="(min-width: 469px)"
+                                    srcset="
+                                      /dx/api/dam/v1/collections/1550a3e5-a36f-4efb-aa0f-794290aaf738/items/aad75c77-490c-421d-9040-acdcf4412e37/renditions/486eaad2-d722-48e3-8dde-dbc2126814bc?binary=true
+                                    "
+                                  />
+                                  <img
+                                    class="c-image__image"
+                                    alt=""
+                                    src="/dx/api/dam/v1/collections/1550a3e5-a36f-4efb-aa0f-794290aaf738/items/aad75c77-490c-421d-9040-acdcf4412e37/renditions/e7c03933-c9cb-4b4c-9aa3-27c89c4a475e?binary=true"
+                                    loading="lazy"
+                                  />
+                                </picture>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="c-communication__content">
+                            <div class="c-communication__content-inner">
+                              <h3 class="c-communication__heading">
+                                <a
+                                  class="c-communication__heading-link"
+                                  href="https://admin.goteborg.se/wps/myportal/start/uppleva-och-gora/sommarlov"
+                                  >Maxa din sommar!</a
+                                >
+                              </h3>
+                              <p class="c-communication__paragraph">
+                                Kul aktiviteter över hela Göteborg. Nästan allt är gratis. Ditt
+                                bästa sommarlov börjar nu! Kolla in vad som händer:
+                                goteborg.se/sommarlov
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div
+                        class="o-grid__column"
+                        data-size="4/4"
+                        data-id="e0c64466-55bd-4ebd-b126-e438ad756f9a"
+                      >
+                        <div
+                          class="c-communication c-communication--less-height c-communication--bgcolor-blue-light c-communication--full-width"
+                        >
+                          <div class="c-communication__content">
+                            <div class="c-communication__content-inner">
+                              <h3 class="c-communication__heading">
+                                <a
+                                  class="c-communication__heading-link"
+                                  href="/wps/portal?uri=gbglnk%3ase.goteborg.aktuelltarkiv&amp;id=e817311e-72b6-4836-84f4-548370223b28"
+                                  >Kommunfullmäktiges möte 11 juni 2026</a
+                                >
+                              </h3>
+                              <p class="c-communication__paragraph">
+                                Mötet direktsänds via webb-TV och i närradion med start klockan
+                                15.00.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="component-control id-Z7_8G8GHCC029D3D06OQNAM701QJ0">
+                    <!-- #sidblock: Nyhetsblock-->
+
+                    <div class="c-heading">
+                      <h2 class="c-heading__title">Aktuellt från Göteborgs Stad</h2>
+                    </div>
+
+                    <div class="o-grid">
+                      <div
+                        class="o-grid__column o-grid__column--stretch"
+                        data-size="4/4 4/12@l"
+                        data-id="79d23e6c-5021-40de-a6c7-9cef6e450b04"
+                      >
+                        <div class="c-teaser">
+                          <div class="c-image c-image--crop c-image--ratio-16by9">
+                            <div class="c-image__crop-container">
+                              <div class="c-image__image-container">
+                                <picture>
+                                  <source
+                                    media="(min-width: 600px) and (max-width: 899px)"
+                                    srcset="
+                                      /dx/api/dam/v1/collections/52cb328c-74a3-45d5-8c3d-e5ad2b5390ac/items/5766604d-aa68-4642-a245-6059b3028d50/renditions/a83603e5-9540-41b1-b909-f22186a01db2?binary=true
+                                    "
+                                  />
+                                  <img
+                                    class="c-image__image"
+                                    alt="Människor som dansar runt en midsommarstång."
+                                    src="/dx/api/dam/v1/collections/52cb328c-74a3-45d5-8c3d-e5ad2b5390ac/items/5766604d-aa68-4642-a245-6059b3028d50/renditions/01ca2f37-0f84-4dc8-83f5-83245301a67e?binary=true"
+                                    loading="lazy"
+                                  />
+                                </picture>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="c-teaser__content">
+                            <h3 class="c-teaser__heading">
+                              <a
+                                data-hyphen-check
+                                class="c-teaser__heading-link"
+                                href="/wps/portal?uri=gbglnk%3ase.goteborg.aktuelltarkiv&amp;id=147a8853-ec7a-40d0-8a13-9fc0f6a70b29"
+                                >Midsommarfirande i Slottsskogen 19 juni</a
+                              >
+                            </h3>
+                            <div class="c-teaser__meta">
+                              <span class="c-teaser__date"> 2026-06-02 </span>
+                            </div>
+                            <p class="c-teaser__text">
+                              Välkommen till ett traditionsenligt midsommarfirande på stora
+                              gräsmattan nedanför Björngårdsvillan i Slottsskogen. Under
+                              eftermiddagen fylls parken av musik, sång, ringdans och klassiska
+                              midsommarlekar för både barn och vuxna.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="o-grid__column o-grid__column--stretch"
+                        data-size="4/4 4/12@l"
+                        data-id="fd7e69b2-690e-438a-8014-c5fa2acd4594"
+                      >
+                        <div class="c-teaser">
+                          <div class="c-image c-image--crop c-image--ratio-16by9">
+                            <div class="c-image__crop-container">
+                              <div class="c-image__image-container">
+                                <picture>
+                                  <source
+                                    media="(min-width: 600px) and (max-width: 899px)"
+                                    srcset="
+                                      /dx/api/dam/v1/collections/a22919fa-2c75-4917-82f9-60e58e372fee/items/3b53ef52-665f-471c-8841-f6d2ee6edb39/renditions/f19fe998-3780-4381-bf00-72968b60b647?binary=true
+                                    "
+                                  />
+                                  <img
+                                    class="c-image__image"
+                                    alt=" Ett foto av en lila blomrabatt vid en cirkulationsplats och en spårvagn som passerar i bakgrunden."
+                                    src="/dx/api/dam/v1/collections/a22919fa-2c75-4917-82f9-60e58e372fee/items/3b53ef52-665f-471c-8841-f6d2ee6edb39/renditions/8295201f-b112-4ebc-b58b-be9b2fbc2584?binary=true"
+                                    loading="lazy"
+                                  />
+                                </picture>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="c-teaser__content">
+                            <h3 class="c-teaser__heading">
+                              <a
+                                data-hyphen-check
+                                class="c-teaser__heading-link"
+                                href="/wps/portal?uri=gbglnk%3ase.goteborg.aktuelltarkiv&amp;id=79256888-f876-4ed9-8d2e-02280375b2f4"
+                                >Kampanj mot våld inför sommaren</a
+                              >
+                            </h3>
+                            <div class="c-teaser__meta">
+                              <span class="c-teaser__date"> 2026-06-08 </span>
+                            </div>
+                            <p class="c-teaser__text">
+                              Genom en kampanj inför sommaren vill staden uppmärksamma våld i nära
+                              relationer och visa att kommunen kan erbjuda stöd och hjälp &ndash;
+                              både till dig som utsätts och till dig som utsätter andra.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="o-grid__column o-grid__column--stretch"
+                        data-size="4/4 4/12@l"
+                        data-id="f2cdf74a-04ab-4223-8300-dbfe1d9fd13c"
+                      >
+                        <div class="c-teaser">
+                          <div class="c-image c-image--crop c-image--ratio-16by9">
+                            <div class="c-image__crop-container">
+                              <div class="c-image__image-container">
+                                <picture>
+                                  <source
+                                    media="(min-width: 600px) and (max-width: 899px)"
+                                    srcset="
+                                      /dx/api/dam/v1/collections/e203d69a-80f7-41d2-aa8c-b229c3ab89b6/items/24403dd2-71ef-4311-8ba2-40105e163804/renditions/e1e6160b-9975-41b2-a8c9-d6ab28696190?binary=true
+                                    "
+                                  />
+                                  <img
+                                    class="c-image__image"
+                                    alt=""
+                                    src="/dx/api/dam/v1/collections/e203d69a-80f7-41d2-aa8c-b229c3ab89b6/items/24403dd2-71ef-4311-8ba2-40105e163804/renditions/949f51b0-5fa7-4093-af79-6e45f82d7d8b?binary=true"
+                                    loading="lazy"
+                                  />
+                                </picture>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="c-teaser__content">
+                            <h3 class="c-teaser__heading">
+                              <a
+                                data-hyphen-check
+                                class="c-teaser__heading-link"
+                                href="/wps/portal?uri=gbglnk%3ase.goteborg.aktuelltarkiv&amp;id=b9a26015-d117-4b94-a793-4b2fff10a0b8"
+                                >Plaskis öppnar igen &ndash; välkomna på invigning 17 juni</a
+                              >
+                            </h3>
+                            <div class="c-teaser__meta">
+                              <span class="c-teaser__date"> 2025-06-04 </span>
+                            </div>
+                            <p class="c-teaser__text">
+                              Nu är den nyrenoverade plaskdammen redo för sommarens bad. Kom och
+                              fira med premiärplask, musik och glass!
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="o-grid">
+                      <div class="o-grid__column" data-size="4/4">
+                        <a
+                          class="t-h4 a--color-black"
+                          href="/wps/portal?uri=gbglnk%3ase.goteborg.aktuelltarkiv"
+                          >Läs fler aktuelltartiklar från Göteborgs Stad</a
+                        >
+                      </div>
+                    </div>
+                  </div>
+                  <div class="component-control id-Z7_IA2C144121MHD06CR5JRN5IU26">
+                    <!-- #sidblock: Fokusblock-->
+
+                    <div class="c-heading">
+                      <h2 class="c-heading__title">Hitta aktiviteter i våra kalendarier</h2>
+                    </div>
+
+                    <div class="o-grid" data-matomo="focus-highlights">
+                      <div
+                        class="o-grid__column o-grid__column--stretch"
+                        data-size="4/4 4/8@l"
+                        data-id="ce294887-9c6b-493b-9027-3ba2bffeac8c"
+                      >
+                        <div class="c-communication c-communication--bgcolor-pink-light">
+                          <div
+                            class="c-communication__image c-image c-image--crop c-image--ratio-16by9"
+                          >
+                            <div class="c-image__crop-container">
+                              <div class="c-image__image-container">
+                                <picture>
+                                  <source
+                                    media="(min-width: 469px)"
+                                    srcset="
+                                      /dx/api/dam/v1/collections/914eee87-0c1a-4b1c-8b18-a45bee676344/items/ac3c3171-99c3-41c9-bbd7-f36fd4d6eb46/renditions/ee47c814-5da7-4fcd-89f2-a6c1ce24f9c7?binary=true
+                                    "
+                                  />
+                                  <img
+                                    class="c-image__image"
+                                    alt="Illustration av en vuxen som läser högt ur en bok för ett barn."
+                                    src="/dx/api/dam/v1/collections/914eee87-0c1a-4b1c-8b18-a45bee676344/items/ac3c3171-99c3-41c9-bbd7-f36fd4d6eb46/renditions/fa34478c-f97d-4714-91ae-b0209ad8915a?binary=true"
+                                    loading="lazy"
+                                  />
+                                </picture>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="c-communication__content">
+                            <div class="c-communication__content-inner">
+                              <h3 class="c-communication__heading">
+                                <a
+                                  class="c-communication__heading-link"
+                                  href="/wps/portal?uri=gbglnk%3akalendarium-ck"
+                                  >Hitta Göteborgs Stads aktiviteter</a
+                                >
+                              </h3>
+                              <p class="c-communication__paragraph">
+                                I Göteborgs Stads kalendarium hittar du aktiviteter från alla våra
+                                verksamheter, till exempel utflykter, utställningar, sagostunder och
+                                motion. Öppet för alla och nästan allt är gratis.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div
+                        class="o-grid__column o-grid__column--stretch"
+                        data-size="4/4 4/8@l"
+                        data-id="2914ac07-b3e6-4795-8f06-eb2df989f498"
+                      >
+                        <div class="c-communication c-communication--bgcolor-purple-light">
+                          <div
+                            class="c-communication__image c-image c-image--crop c-image--ratio-16by9"
+                          >
+                            <div class="c-image__crop-container">
+                              <div class="c-image__image-container">
+                                <picture>
+                                  <source
+                                    media="(min-width: 469px)"
+                                    srcset="
+                                      /dx/api/dam/v1/collections/1550a3e5-a36f-4efb-aa0f-794290aaf738/items/e7dca543-42bf-4fca-83a5-04e2f595c734/renditions/4366027e-def8-4d67-95c9-daa9ba5e5470?binary=true
+                                    "
+                                  />
+                                  <img
+                                    class="c-image__image"
+                                    alt="Bild från en konsert på Ullevi."
+                                    src="/dx/api/dam/v1/collections/1550a3e5-a36f-4efb-aa0f-794290aaf738/items/e7dca543-42bf-4fca-83a5-04e2f595c734/renditions/09810db9-3337-47a6-b386-b7d2f286e25a?binary=true"
+                                    loading="lazy"
+                                  />
+                                </picture>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="c-communication__content">
+                            <div class="c-communication__content-inner">
+                              <h3 class="c-communication__heading">
+                                <a
+                                  class="c-communication__heading-link"
+                                  href="https://www.goteborg.com/evenemang?utm_source=goteborgse&amp;utm_medium=organic&amp;utm_campaign=traffic&amp;utm_term=kalendarium&amp;utm_content=kalendarium"
+                                  >Evenemangskalender för hela Göteborgsområdet</a
+                                >
+                              </h3>
+                              <p class="c-communication__paragraph">
+                                I evenemangskalendern hos goteborg.com hittar du ett rikt urval av
+                                evenemang på scener, arenor, parker och besöksmål i Göteborg med
+                                omnejd.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="component-control id-Z7_IA2C14412H6HD06SKH93D02BL2">
+                    <!-- #sidblock: Fokusblock-->
+                  </div>
+                  <div class="component-control id-Z7_8G8GHCC029D3D06OQNAM701QN0">
+                    <!-- #sidblock: Nyhetsblock-->
+
+                    <div class="c-heading">
+                      <h2 class="c-heading__title">Nyheter från nättidningen Vårt Göteborg</h2>
+                    </div>
+
+                    <div class="o-grid">
+                      <div
+                        class="o-grid__column o-grid__column--stretch"
+                        data-size="4/4 4/12@l"
+                        data-id="90272062-5555-47ec-a67d-9b9316d22744"
+                      >
+                        <div class="c-teaser">
+                          <div class="c-image c-image--crop c-image--ratio-16by9">
+                            <div class="c-image__crop-container">
+                              <div class="c-image__image-container">
+                                <picture>
+                                  <source
+                                    media="(min-width: 600px) and (max-width: 899px)"
+                                    srcset="
+                                      /dx/api/dam/v1/collections/823512f5-a548-4a97-a196-1f0d9cccd422/items/5e1ebd5c-214e-4db0-8449-40e44f2ede5d/renditions/9adcb2c6-8428-4b78-a251-c27a076411ab?binary=true
+                                    "
+                                  />
+                                  <img
+                                    class="c-image__image"
+                                    alt="En blå buss."
+                                    src="/dx/api/dam/v1/collections/823512f5-a548-4a97-a196-1f0d9cccd422/items/5e1ebd5c-214e-4db0-8449-40e44f2ede5d/renditions/569da193-aec6-46a2-9d1c-67cefd42a3b2?binary=true"
+                                    loading="lazy"
+                                  />
+                                </picture>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="c-teaser__content">
+                            <h3 class="c-teaser__heading">
+                              <a
+                                data-hyphen-check
+                                class="c-teaser__heading-link"
+                                href="https://vartgoteborg.se/p/ta-badbussen-till-delsjon-lilleby-och-sillvik-i-sommar/"
+                                >Ta badbussen till Delsjön, Lilleby och Sillvik i sommar</a
+                              >
+                            </h3>
+                            <div class="c-teaser__meta">
+                              <span class="c-teaser__date"> 2026-06-08 </span>
+                            </div>
+                            <p class="c-teaser__text">
+                              Från mitten av juni till mitten av augusti kommer två badbussar att ta
+                              badsugna göteborgare till Delsjöbadet, Sillvik och Lillebybadet.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="o-grid__column o-grid__column--stretch"
+                        data-size="4/4 4/12@l"
+                        data-id="5707a94b-df6d-492e-b3ef-5ee22cd068a8"
+                      >
+                        <div class="c-teaser">
+                          <div class="c-image c-image--crop c-image--ratio-16by9">
+                            <div class="c-image__crop-container">
+                              <div class="c-image__image-container">
+                                <picture>
+                                  <source
+                                    media="(min-width: 600px) and (max-width: 899px)"
+                                    srcset="
+                                      /dx/api/dam/v1/collections/823512f5-a548-4a97-a196-1f0d9cccd422/items/ee499827-a5f6-4bcc-b342-d39c11e357d1/renditions/b04f975a-bb17-4f67-9e2d-a36753f57178?binary=true
+                                    "
+                                  />
+                                  <img
+                                    class="c-image__image"
+                                    alt=""
+                                    src="/dx/api/dam/v1/collections/823512f5-a548-4a97-a196-1f0d9cccd422/items/ee499827-a5f6-4bcc-b342-d39c11e357d1/renditions/3bf95905-7a8a-43f2-b3ea-7994d79b3891?binary=true"
+                                    loading="lazy"
+                                  />
+                                </picture>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="c-teaser__content">
+                            <h3 class="c-teaser__heading">
+                              <a
+                                data-hyphen-check
+                                class="c-teaser__heading-link"
+                                href="https://vartgoteborg.se/p/tio-goteborgare-hyllades-pa-stadens-fodelsedag/"
+                                >Tio göteborgare hyllades på stadens födelsedag</a
+                              >
+                            </h3>
+                            <div class="c-teaser__meta">
+                              <span class="c-teaser__date"> 2026-06-05 </span>
+                            </div>
+                            <p class="c-teaser__text">
+                              Det blev en högtidlig kväll på Börsen när Göteborgs Stad delade ut
+                              årets förtjänsttecken den 4 juni. Tio personer uppmärksammades för
+                              sitt engagemang och för insatser som gjort avtryck i Göteborg.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="o-grid__column o-grid__column--stretch"
+                        data-size="4/4 4/12@l"
+                        data-id="4fb53739-60be-4558-8d58-5270b9199f06"
+                      >
+                        <div class="c-teaser">
+                          <div class="c-image c-image--crop c-image--ratio-16by9">
+                            <div class="c-image__crop-container">
+                              <div class="c-image__image-container">
+                                <picture>
+                                  <source
+                                    media="(min-width: 600px) and (max-width: 899px)"
+                                    srcset="
+                                      /dx/api/dam/v1/collections/823512f5-a548-4a97-a196-1f0d9cccd422/items/eae35691-2b7e-43f5-8ee9-b78dfaef5c25/renditions/84b33113-0e91-4642-8b96-62204018db3b?binary=true
+                                    "
+                                  />
+                                  <img
+                                    class="c-image__image"
+                                    alt=""
+                                    src="/dx/api/dam/v1/collections/823512f5-a548-4a97-a196-1f0d9cccd422/items/eae35691-2b7e-43f5-8ee9-b78dfaef5c25/renditions/4ac69f79-a518-4846-a738-a2e6ae81c857?binary=true"
+                                    loading="lazy"
+                                  />
+                                </picture>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="c-teaser__content">
+                            <h3 class="c-teaser__heading">
+                              <a
+                                data-hyphen-check
+                                class="c-teaser__heading-link"
+                                href="https://vartgoteborg.se/p/fotbollsfest-i-goteborg-nar-sveriges-herrar-spelar-vm/"
+                                >Fotbollsfest i Göteborg när Sveriges herrar spelar VM</a
+                              >
+                            </h3>
+                            <div class="c-teaser__meta">
+                              <span class="c-teaser__date"> 2026-05-29 </span>
+                            </div>
+                            <p class="c-teaser__text">
+                              Kolla Sveriges matcher på storbildsskärm på Ullevi eller ta med barnen
+                              till Plikta för att träffa olika fotbollsklubbar. När fotbolls-VM drar
+                              i gång blir det folkfest runt om i Göteborg.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="o-grid">
+                      <div class="o-grid__column" data-size="4/4">
+                        <a class="t-h4 a--color-black" href="https://vartgoteborg.se/"
+                          >Fler nyheter från nättidningen Vårt Göteborg</a
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </main>
+              <!-- LAYOUT TEMPLATE END -->
+              <!--End innehåll-->
+            </div>
+          </div>
+        </div>
+      </div>
+      <div role="region" aria-label="Chatt"></div>
+      <footer class="c-footer">
+        <div class="c-footer__head">
+          <div class="c-footer__inner">
+            <div class="o-grid">
+              <div class="o-grid__column o-grid__column--stretch" data-size="4/4 6/12@m 3/12@l">
+                <div class="c-footer__column">
+                  <h1 class="c-footer__column-heading">Andra språk</h1>
+                  <ul class="c-list">
+                    <li>
+                      <a
+                        href="/wps/portal?uri=gbglnk%3agbg.page.9ccad588-2dab-4568-8af4-1cf61004912d"
+                        >Teckenspråk</a
+                      >
+                    </li>
+                    <li>
+                      <a href="/wps/portal?uri=gbglnk%3agbg.page.20121203-131250">Suomeksi</a>
+                    </li>
+                    <li><a href="/wps/portal?uri=gbglnk%3a20130128-143623">Fler språk</a></li>
+                    <li><a href="/wps/portal?uri=gbglnk%3a2024611145821986">Lyssna</a></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="o-grid__column o-grid__column--stretch" data-size="4/4 6/12@m 3/12@l">
+                <div class="c-footer__column">
+                  <h1 class="c-footer__column-heading">Kontakta oss</h1>
+                  <ul class="c-list">
+                    <li>
+                      <a
+                        href="/wps/portal?uri=gbglnk%3agbg.page.958c1144-4ba5-4a68-ada6-46b0484aa9c4"
+                        >Kontakta Göteborgs Stad</a
+                      >
+                    </li>
+                    <li>
+                      <a href="/wps/portal?uri=gbglnk%3agbg.page.20120828-110230"
+                        >Felanmälan - gator, torg, parker</a
+                      >
+                    </li>
+                    <li>
+                      <a href="/wps/portal?uri=gbglnk%3agbg.page.20120815-085245"
+                        >Lämna synpunkter</a
+                      >
+                    </li>
+                    <li>
+                      <a href="/wps/portal?uri=gbglnk%3a20196914213876"
+                        >Följ oss i sociala medier</a
+                      >
+                    </li>
+                    <li><a href="/wps/portal?uri=gbglnk%3Apress">Press och media</a></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="o-grid__column o-grid__column--stretch" data-size="4/4 6/12@m 3/12@l">
+                <div class="c-footer__column">
+                  <h1 class="c-footer__column-heading">Om webbplatsen</h1>
+                  <ul class="c-list">
+                    <li>
+                      <a
+                        href="/wps/portal?uri=gbglnk%3agbg.page.2d37e341-6789-4b14-995b-d85be887664a"
+                        >Om webbplatsen</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        href="/wps/portal?uri=gbglnk%3agbg.page.75d946ba-fb92-4403-91e5-7027227960fd"
+                        >Kakor på goteborg.se</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        href="/wps/portal?uri=gbglnk%3agbg.page.292053fa-ec02-40a9-bc58-26261b6fe0d5"
+                        >Behandling av personuppgifter</a
+                      >
+                    </li>
+                    <li>
+                      <a href="/wps/portal?uri=gbglnk%3a2020257421884"
+                        >Tillgänglighetsredogörelse</a
+                      >
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="o-grid__column o-grid__column--stretch" data-size="4/4 6/12@m 3/12@l">
+                <div class="c-footer__column">
+                  <h1 class="c-footer__column-heading">Hitta snabbt</h1>
+                  <ul class="c-list">
+                    <li>
+                      <a href="/wps/portal?uri=gbglnk%3a20150126-135606"
+                        >Vattenläckor, elavbrott och andra störningar</a
+                      >
+                    </li>
+                    <li><a href="/wps/portal?uri=gbglnk%3a20171027135036322">Anslagstavla</a></li>
+                    <li>
+                      <a href="/wps/portal?uri=gbglnk%3a20120912-1056"
+                        >Sök handlingar och protokoll</a
+                      >
+                    </li>
+                    <li><a href="https://politiker.goteborg.se/">Hitta politiker</a></li>
+                    <li>
+                      <a href="/wps/portal?uri=gbglnk%3a2024122163139901"
+                        >E-tjänster och blanketter</a
+                      >
+                    </li>
+                    <li><a href="/wps/portal?uri=gbglnk%3a202422310319814">Anställd</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="c-footer__main">
+          <div class="c-footer__inner">
+            <div class="o-grid">
+              <div class="o-grid__column o-grid__column--stretch" data-size="4/4">
+                <div>
+                  <span class="t-visually-hidden">Avsändare: Göteborgs Stad</span>
+                  <img
+                    src="/wps/contenthandler/dav/fs-type1/common-resources/gbg/frontend-assets/images/logo-gbg-white-text.svg"
+                    alt="Göteborgs Stad"
+                    class="c-footer__logo"
+                  />
+                  <p>
+                    <strong><a href="/wps/portal/start">goteborg.se</a></strong> är Göteborgs Stads
+                    officiella webbplats.
+                  </p>
+                  <p>
+                    Göteborgs Stads kontaktcenter: <br /><a href="tel:+46313650000"
+                      ><span class="t-visually-hidden"
+                        >Telefonnummer till Göteborgs Stads kontaktcenter: </span
+                      >031-365 00 00</a
+                    >
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+      <script id="dictionary-hyphens" type="application/json">
+        {
+          "vägledningscentrum": "väglednings&shy;centrum",
+          "katrinelundsgymnasiet": "katrinelunds&shy;gymnasiet",
+          "industritekniska": "industritekniska",
+          "omsorgsprogrammet": "omsorgs&shy;programmet",
+          "fastighetsprogrammet": "fastighets&shy;programmet",
+          "livsmedelsprogrammet": "livsmedels&shy;programmet",
+          "administrationsprogrammet": "administrations&shy;programmet",
+          "transportprogrammet": "transport&shy;programmet",
+          "anläggningsprogrammet": "anläggnings&shy;programmet",
+          "ekonomiprogrammet": "ekonomi&shy;programmet",
+          "naturbruksprogrammet": "naturbruks&shy;programmet",
+          "naturvetenskapsprogrammet": "naturvetenskaps&shy;programmet",
+          "samhällsvetenskapsprogrammet": "samhällsvetenskaps&shy;programmet",
+          "Ungdomsfullmäktige": "Ungdoms&shy;fullmäktige",
+          "diskrimineringsombudsmannen": "diskriminerings&shy;ombudsmannen",
+          "bullerskyddsskärm": "bullerskydds&shy;skärm",
+          "aktivitetspark": "aktivitets&shy;park",
+          "friidrottsarena": "friidrotts&shy;arena",
+          "sommarlovsaktiviteter": "sommarlovs&shy;aktiviteter",
+          "sommarlovsbidrag": "sommarlovs&shy;bidrag",
+          "blomsterprogram": "blomster&shy;program",
+          "blomsterutsmyckningar": "blomster&shy;utsmyckningar",
+          "anhörigkonsulenterna": "anhörig&shy;konsulenterna",
+          "utvecklingsbidrag": "utvecklings&shy;bidrag",
+          "verksamhetsbidrag": "verksamhets&shy;bidrag",
+          "fastighetsbestämning": "fastighets&shy;bestämning",
+          "kollektivtrafikstråk": "kollektiv&shy;trafik&shy;stråk",
+          "högvattenskyddsprogrammet": "högvatten&shy;skydds&shy;programmet",
+          "socialförvaltning": "social&shy;förvaltning",
+          "socialförvaltningens": "social&shy;förvaltningens",
+          "socialförvaltningen": "social&shy;förvaltningen",
+          "avfallsinsamlingssystem": "avfallsinsamlings&shy;system",
+          "sommarunderhållningen": "sommar&shy;underhållningen",
+          "funktionsnedsättning": "funktions&shy;nedsättning",
+          "evenemangskalendern": "evenemangs&shy;kalendern",
+          "evenemangskalender": "evenemangs&shy;kalender",
+          "markplaneringsritning": "markplanerings&shy;ritning",
+          "livsmedelsverksamhet": "livsmedels&shy;verksamhet",
+          "utbildningsanordnare": "utbildnings&shy;anordnare",
+          "solenergianläggningar": "solenergi&shy;anläggningar",
+          "konsumentrådgivningen": "konsument&shy;rådgivningen",
+          "konsumentrådgivning": "konsument&shy;rådgivning",
+          "översiktsplanering": "översikts&shy;planering",
+          "samhällsutvecklingsrådet": "samhälls&shy;utvecklings&shy;rådet",
+          "arbetsmarknadsinsatser": "arbetsmarknads&shy;insatser",
+          "arbetsmarknadsinsats": "arbetsmarknads&shy;insats",
+          "begravningskostnader": "begravnings&shy;kostnader",
+          "inackorderingstillägg": "inackorderings&shy;tillägg",
+          "psykoterapimottagning": "psykoterapi&shy;mottagning",
+          "förpackningsinsamling": "förpacknings&shy;insamling",
+          "stadsbyggnadskvaliteter": "stadsbyggnads&shy;kvaliteter",
+          "stadsledningskontorets": "stadslednings&shy;kontorets",
+          "stadsledningskontoret": "stadslednings&shy;kontoret",
+          "äganderättsutredning": "äganderätts&shy;utredning",
+          "tillgänglighetsarbetet": "tillgänglighets&shy;arbetet",
+          "tillgänglighetsarbete": "tillgänglighets&shy;arbete",
+          "kompensationsåtgärder": "kompensations&shy;åtgärder",
+          "parkeringsbestämmelse": "parkerings&shy;bestämmelse",
+          "föreningsförvaltningens": "förenings&shy;förvaltningens",
+          "föreningsförvaltningen": "förenings&shy;förvaltningen",
+          "revisionsberättelser": "revisions&shy;berättelser",
+          "representationskontor": "representations&shy;kontor",
+          "visselblåsarfunktion": "visselblåsar&shy;funktion",
+          "barnkonsekvensanalys": "barnkonsekvens&shy;analys",
+          "funktionsstödsfrågor": "funktionsstöds&shy;frågor",
+          "omsorgsförvaltningens": "omsorgs&shy;förvaltningens",
+          "omsorgsförvaltningen": "omsorgs&shy;förvaltningen",
+          "återvinningsstationer": "återvinnings&shy;stationer",
+          "återvinningscentralen": "återvinnings&shy;centralen",
+          "återvinningscentraler": "återvinnings&shy;centraler",
+          "återvinningscentralerna": "återvinnings&shy;centralerna",
+          "upphandlingsförvaltningens": "upphandlings&shy;förvaltningens",
+          "upphandlingsförvaltningen": "upphandlings&shy;förvaltningen",
+          "funktionsnedsättningar": "funktions&shy;nedsättningar",
+          "lantmäterimyndighetens": "lantmäteri&shy;myndighetens",
+          "lantmäterimyndigheten": "lantmäteri&shy;myndigheten",
+          "friidrottsanläggningar": "friidrotts&shy;anläggningar",
+          "nyttoparkeringstillstånd": "nyttoparkerings&shy;tillstånd",
+          "boendeparkeringstillstånd": "boendeparkerings&shy;tillstånd",
+          "samhällsorientering": "samhälls&shy;orientering",
+          "samhällsorienterande": "samhälls&shy;orienterande",
+          "ventilationskontroll": "ventilations&shy;kontroll",
+          "medlingsverksamheten": "medlings&shy;verksamheten",
+          "överförmyndarnämnden": "överförmyndar&shy;nämnden",
+          "samfällighetsföreningar": "samfällighets&shy;föreningar",
+          "detaljplaneprocessen": "detaljplane&shy;processen",
+          "aktivitetsbidragsgodkänd": "aktivitetsbidrags&shy;godkänd",
+          "funktionshinderområdet": "funktionshinder&shy;området",
+          "idrottsanläggningar": "idrotts&shy;anläggningar",
+          "stadsutvecklingsprojekt": "stadsutvecklings&shy;projekt",
+          "exploateringsförvaltningens": "exploaterings&shy;förvaltningens",
+          "exploateringsförvaltningen": "exploaterings&shy;förvaltningen",
+          "exploateringsnämndens": "exploaterings&shy;nämndens",
+          "exploateringsnämnden": "exploaterings&shy;nämnden",
+          "förskoleförvaltningens": "förskole&shy;förvaltningens",
+          "förskoleförvaltningen": "förskole&shy;förvaltningen",
+          "grundskoleförvaltningens": "grundskole&shy;förvaltningens",
+          "grundskoleförvaltningen": "grundskole&shy;förvaltningen",
+          "kommunfullmäktige": "kommun&shy;fullmäktige",
+          "ungdomsfullmäktige": "ungdoms&shy;fullmäktige",
+          "förbränningsanläggningar": "förbrännings&shy;anläggningar",
+          "funktionshinderombudsman": "funktionshinder&shy;ombudsman",
+          "funktionshinderområdet": "funktionshinder&shy;området",
+          "funktionshinderområde": "funktionshinder&shy;område",
+          "kulturförvaltningens": "kultur&shy;förvaltningens",
+          "kulturförvaltningen": "kultur&shy;förvaltningen",
+          "stadsfastighetsförvaltningens": "stadsfastighets&shy;förvaltningens",
+          "stadsfastighetsförvaltningen": "stadsfastighets&shy;förvaltningen",
+          "tillgänglighetsanpassad": "tillgänglighets&shy;anpassad",
+          "tillgänglighetsanpassning": "tillgänglighets&shy;anpassning",
+          "serveringstillstånd": "serverings&shy;tillstånd",
+          "provsmakningstillstånd": "provsmaknings&shy;tillstånd",
+          "introduktionsprogram": "introduktions&shy;program",
+          "gemensamhetsanläggningar": "gemensamhets&shy;anläggningar",
+          "gemensamhetsanläggning": "gemensamhets&shy;anläggning",
+          "bostadsrättsförening": "bostadsrätts&shy;förening",
+          "bostadsrättsföreningar": "bostadsrätts&shy;föreningar",
+          "tillgänglighetsredogörelse": "tillgänglighets&shy;redogörelse",
+          "stadsbyggnadsförvaltningens": "stadsbyggnads&shy;förvaltningens",
+          "stadsmiljöförvaltningens": "stadsmiljö&shy;förvaltningens",
+          "stadsbyggnadsförvaltningen": "stadsbyggnads&shy;förvaltningen",
+          "tillgänglighetsredogörelser": "tillgänglighets&shy;redogörelser",
+          "funktionshinderombudsmannen": "funktionshinder&shy;ombudsmannen",
+          "stadsmiljöförvaltningen": "stadsmiljö&shy;förvaltningen"
+        }
+      </script>
+      <div id="wpthemeComplementaryContent"></div>
+    </div>
+    <script
+      type="text/javascript"
+      src="/wps/contenthandler/!ut/p/digest!bxMk_VvocfSffd2Ym-yICg/mashup/ra:collection?themeID=ZJ_89E4H2C0K81180A4N3VNEO00E1&amp;locale=sv&amp;locale=en&amp;mime-type=text%2Fjavascript&amp;lm=1780545813427&amp;entry=wp_portal__0.0%3Aconfig_config_static&amp;entry=wcm_config__0.0%3Aconfig_config_static&amp;entry=wcm_inplaceEdit__0.0%3Aconfig_config_static"
+    ></script>
+    <script type="text/javascript">
+      i$.merge({
+        ibmCfg: {
+          themeConfig: {
+            themeUniqueName: "se.goteborg.gbgTheme",
+            themeRootURI:
+              "/wps/contenthandler/!ut/p/digest!bxMk_VvocfSffd2Ym-yICg/dav/fs-type1/themes/GbgTheme",
+            themeWebAppBaseURI: "/wps/gbgTheme/themes/html/GbgTheme",
+            themeWebDAVBaseURI: "dav:fs-type1/themes/GbgTheme/",
+            modulesWebAppBaseURI: "/wps/themeModules",
+            commonResourcesRootURI:
+              "/wps/contenthandler/!ut/p/digest!bxMk_VvocfSffd2Ym-yICg/dav/fs-type1/common-resources",
+            isRTL: false,
+            isPageRenderModeCSA: false,
+            portletOverridePageTitle: "Start",
+            currentContentNodeOID: "Z6_8G8GHCC021DRC060JMVDDI08V4",
+            loadingImage: "css/images/loading.gif",
+            dndSourceDefinitions: [
+              {
+                id: "ibmDndColumn",
+                object: "com.ibm.pb.dnd.layout.LayoutColumnSource",
+                orientation: "vertical",
+              },
+              {
+                id: "ibmDndRow",
+                object: "com.ibm.pb.dnd.layout.LayoutRowSource",
+                orientation: "horizontal",
+              },
+            ],
+            categorySources: ["system/WebContentCategory.json,label:shelf_socialCategory"],
+            styleSources: [],
+            layoutSources: [],
+          },
+          portalConfig: {
+            locale: "sv",
+            portalURI: "/wps/portal",
+            contentHandlerURI: "/wps/contenthandler/!ut/p/digest!3ShE33TBJZbHSwJLZOenjQ/",
+            pocURI: "/wps/portal/!ut/p/z0/0wcA1NLTeQ!!/",
+            isVirtualPortal: false,
+            canImpersonate: false,
+            themeRootURI: "/wps/gbgTheme/themes/html/GbgTheme",
+            parentPageID: "Z6_M2C61H02OGC9F060QDQQP700O3",
+            currentPageOID: "Z6_8G8GHCC021DRC060JMVDDI08V4",
+            canAnonymousUserViewCurrentPage: true,
+            bootstrapState:
+              "&lt;?xml version=&#034;1.0&#034; encoding=&#034;UTF-8&#034;?&gt;&lt;root xmlns=&#034;http://www.ibm.com/xmlns/prod/websphere/portal/v6.1/portal-state&#034;&gt;&lt;state type=&#034;navigational&#034;&gt;&lt;selection selection-node=&#034;Z6_8G8GHCC021DRC060JMVDDI08V4&#034;&gt;&lt;mapping src=&#034;Z6_8G8GHCC021DRC060JMVDDI08V4&#034; dst=&#034;Z6_000000000000000000000000A0&#034;/&gt;&lt;/selection&gt;&lt;/state&gt;&lt;/root&gt;",
+            isUserLoggedIn: false,
+            currentUser: "anonymous portal user",
+            currentUserOID: "",
+            aggregatedStyle: null,
+            isCurrentPageEditable: true,
+            wcmPageMetadata: { contentRoot: null, sharingScope: null },
+            projectUUID: null,
+          },
+          userName: "",
+        },
+        com_ibm_theme_capabilities: {
+          wp_dynamicContentSpots_85: "0.0",
+          wp_dialog_draggable: "0.0",
+          wp_hiddenpages: "0.0",
+          "module-hyphenation": "1.0",
+          wp_simple_contextmenu_ext: "0.0",
+          wp_simple_contextmenu_js: "0.0",
+          gbg_page_roles: "0.0",
+          wp_theme_utils: "0.0",
+          wp_toolbar_menuactions: "0.0",
+          wp_toolbar_host_view: "0.0",
+          "module-header": "1.0",
+          "module-header-search": "1.0",
+          wp_hiddencontent: "0.0",
+          "module-matomo-analytics": "1.0",
+          wp_portal: "0.0",
+          "photon.dom": "1.0",
+          wp_photon_dom: "0.0",
+          "module-theme-menus": "1.0",
+          "module-breadcrumb": "0.0",
+          wp_client_tracing: "0.0",
+          "module-frontend-customizations": "0.0",
+          modules: "0.1",
+          "gbg-error-receiver": "1.0",
+          hasBaseURL: "true",
+          wp_state_page_modes: "0.0",
+          gbg_theme: "2.8.0",
+          wp_toolbar_common_actionbar: "0.0",
+          wp_client_main: "0.0",
+          wp_toolbar_viewframe_validator: "0.0",
+          "module-frontend-goteborg": "0.0",
+          wp_toolbar_actionbar: "0.0",
+          "simple-contextmenu": "1.1",
+          wp_dialog_css: "0.0",
+          wp_client_logging: "0.0",
+          wp_state_page: "0.0",
+          wp_toolbar_common: "0.0",
+          wp_toolbar_projectmenu: "0.0",
+          wp_dialog_main: "0.0",
+          wp_simple_contextmenu_main: "0.0",
+          "module-page-metadata": "0.0",
+          "module-footer": "1.0",
+          wp_custom_page_style: "0.0",
+          wp_toolbar_informationmode: "0.0",
+          "module-frontend-ui-framework": "1.0",
+          wp_client_ext: "0.0",
+          "module-messages": "1.0",
+          wp_simple_contextmenu_css: "0.0",
+          wp_toolbar85: "0.0",
+          wp_toolbar_profile: "0.0",
+          wp_modules: "0.0",
+          toolbar: "8.5",
+          wp_dialog_util: "0.0",
+          "module-userbar": "0.0",
+          wp_toolbar_utils: "0.0",
+          a11y: "1.0",
+          wp_a11y: "0.0",
+          "module-header-navigation": "1.0",
+          wp_simple_contextmenu_templates: "0.0",
+          "module-theme-toolbar": "1.0",
+        },
+        com_ibm_device_class: [],
+      });
+      ibmCfg.portalConfig.bootstrapState = (ibmCfg.portalConfig.bootstrapState || "")
+        .replace(/&lt;/gm, "<")
+        .replace(/&gt;/gm, ">")
+        .replace(/&amp;/gm, "&")
+        .replace(/&#039;/gm, "'")
+        .replace(/&#034;/gm, '"');
+      i$.merge({ ibmCfg: { portalConfig: { isShowHiddenPages: false } } });
+    </script>
+    <script
+      type="text/javascript"
+      src="/wps/contenthandler/!ut/p/digest!UN-2oEZqj6vVglGqevFm3g/mashup/ra:collection?themeID=ZJ_89E4H2C0K81180A4N3VNEO00E1&amp;locale=sv&amp;locale=en&amp;mime-type=text%2Fjavascript&amp;lm=1780490533645&amp;entry=wp_toolbar_utils__0.0%3Aconfig_js&amp;entry=wp_toolbar_menuactions__0.0%3Aconfig_js&amp;entry=wp_dialog_main__0.0%3Aconfig_js&amp;entry=module-theme-toolbar__1.0%3Aconfig_js&amp;entry=module-frontend-customizations__0.0%3Aconfig_js&amp;entry=wp_state_page_modes__0.0%3Aconfig_js&amp;entry=module-frontend-ui-framework__1.0%3Aconfig_js&amp;entry=wp_simple_contextmenu_ext__0.0%3Aconfig_js&amp;entry=wp_simple_contextmenu_js__0.0%3Aconfig_js&amp;entry=wp_toolbar_actionbar__0.0%3Aconfig_js&amp;entry=module-frontend-goteborg__0.0%3Aconfig_js&amp;entry=wp_toolbar_projectmenu__0.0%3Aconfig_js&amp;entry=module-theme-menus__1.0%3Aconfig_js"
+    ></script>
+    <a
+      rel="alternate"
+      id="config_js_deferred"
+      href="/wps/contenthandler/!ut/p/digest!UN-2oEZqj6vVglGqevFm3g/mashup/ra:collection?themeID=ZJ_89E4H2C0K81180A4N3VNEO00E1&amp;locale=sv&amp;locale=en&amp;mime-type=text%2Fjavascript&amp;lm=1780545813000&amp;entry=wp_liveobject_framework_core__0.0%3Aconfig_js&amp;entry=wp_dnd_main__0.0%3Aconfig_js&amp;entry=wp_movecontrols__0.0%3Aconfig_js&amp;entry=gbg_wp_toolbar_controlactions__0.0%3Aconfig_js&amp;entry=wp_portal_ui_utils__0.0%3Aconfig_js&amp;entry=wp_contextmenu_js__0.0%3Aconfig_js&amp;entry=wp_status_bar__0.0%3Aconfig_js&amp;entry=wp_contextmenu_config_lof__0.0%3Aconfig_js&amp;entry=wp_federated_documents_picker__0.0%3Aconfig_js&amp;entry=wp_toolbar_controlactions__0.0%3Aconfig_js&amp;entry=wp_content_targeting_cam__0.0%3Aconfig_js&amp;deferred=true"
+      style="display: none"
+    >
+      Deferred Modules
+    </a>
+    <div id="simpleMenuTemplate" class="wpthemeMenuLeft">
+      <div class="wpthemeMenuBorder">
+        <div class="wpthemeMenuNotchBorder"></div>
+        <!-- define the menu item template inside the "ul" element.  only "css-class", "description", and "title" are handled by the theme's sample javascript. -->
+        <ul class="wpthemeMenuDropDown wpthemeTemplateMenu" role="menu">
+          <li class="${css-class}" role="menuitem" tabindex="-1">
+            <span class="wpthemeMenuText">${title}</span>${badge}
+          </li>
+        </ul>
+      </div>
+      <!-- Template for loading -->
+      <div class="wpthemeMenuLoading wpthemeMenuLoadingText wpthemeTemplateLoading">${loading}</div>
+      <!-- Template for submenu -->
+      <div class="wpthemeAnchorSubmenu wpthemeTemplateSubmenu">
+        <div class="wpthemeMenuBorder wpthemeMenuSubmenu">
+          <ul id="${submenu-id}" class="wpthemeMenuDropDown" role="menu">
+            <li role="menuitem" tabindex="-1"></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <a
+      rel="alternate"
+      id="config_markup_deferred"
+      href="/wps/contenthandler/!ut/p/digest!Wwq4Ss-AyN_dov_7EtAKTg/mashup/ra:collection?themeID=ZJ_89E4H2C0K81180A4N3VNEO00E1&amp;locale=sv&amp;locale=en&amp;mime-type=text%2Fplain&amp;entry=wp_dnd_main__0.0%3Aconfig_markup&amp;entry=wp_contextmenu_templates__0.0%3Aconfig_markup&amp;entry=wp_draft_page_ribbon__0.0%3Aconfig_markup&amp;deferred=true"
+      style="display: none"
+    >
+      Deferred Modules
+    </a>
+  </body>
+</html>

@@ -1,0 +1,64 @@
+{
+  "name": "@oddlyeven/kravla",
+  "version": "0.1.0-alpha.0",
+  "description": "Polite web crawler — Crawlee-based page crawling, sitemap/RSS ingestion, Open ePlatform e-service harvesting, platform detection and content extraction.",
+  "license": "MIT",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Oddly-Even/kravla.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/Oddly-Even/kravla#readme",
+  "bugs": "https://github.com/Oddly-Even/kravla/issues",
+  "keywords": [
+    "crawler",
+    "crawlee",
+    "sitemap",
+    "rss",
+    "open-eplatform",
+    "sweden",
+    "municipality"
+  ],
+  "files": [
+    "dist",
+    "data"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./municipalities": {
+      "types": "./dist/municipalities.d.ts",
+      "default": "./dist/municipalities.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@crawlee/cheerio": "^3.16.0",
+    "@crawlee/core": "^3.16.0",
+    "@crawlee/utils": "^3.16.0",
+    "@mozilla/readability": "^0.6.0",
+    "cheerio": "1.0.0-rc.12",
+    "domhandler": "^5.0.3",
+    "linkedom": "^0.18.12",
+    "robots-parser": "3.0.1",
+    "rss-parser": "^3.13.0",
+    "turndown": "^7.2.4",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/turndown": "^5.0.6",
+    "tsup": "^8.5.0"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

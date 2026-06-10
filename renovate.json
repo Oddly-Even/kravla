@@ -1,0 +1,11 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "packageRules": [
+    {
+      "matchPackageNames": ["cheerio"],
+      "description": "Pinned to crawlee's resolution — bump only together with @crawlee/*",
+      "enabled": false
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "name": "@oddlyeven/kravla-service",
+  "version": "0.1.0-alpha.0",
+  "description": "Headless HTTP crawl service wrapping @oddlyeven/kravla — NDJSON streaming and signed-webhook delivery.",
+  "license": "MIT",
+  "type": "module",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Oddly-Even/kravla.git",
+    "directory": "packages/service"
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@oddlyeven/kravla": "workspace:*"
+  },
+  "devDependencies": {
+    "tsup": "^8.5.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

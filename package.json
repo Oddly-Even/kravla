@@ -1,0 +1,36 @@
+{
+  "name": "kravla-monorepo",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "bun run --filter '*' build",
+    "typecheck": "bun run --filter '*' typecheck",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run --project unit && vitest run --project integration",
+    "test:unit": "vitest run --project unit",
+    "test:integration": "vitest run --project integration",
+    "test:watch": "vitest",
+    "detect:municipal-services": "bun scripts/detect-municipal-services.ts",
+    "extraction:fidelity": "bun scripts/extraction-fidelity/run.ts",
+    "extraction:fidelity:fetch": "bun scripts/extraction-fidelity/fetch.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^25.7.0",
+    "defuddle": "^0.18.1",
+    "eslint": "^9.39.4",
+    "prettier": "^3.8.3",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.46.4",
+    "vitest": "^4.1.6"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

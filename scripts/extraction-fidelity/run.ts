@@ -1,0 +1,203 @@
+// SPDX-License-Identifier: MIT
+/**
+ * Extraction fidelity harness — runs every fixture through each candidate and
+ * writes side-by-side Markdown to ./out. See README.md for the full story.
+ *
+ * Run: `bun run extraction:fidelity`
+ */
+import { readdirSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+import { candidates, type ExtractionResult } from "./candidates";
+import { FIXTURE_URLS } from "./urls";
+
+const HERE = dirname(fileURLToPath(import.meta.url));
+const FIXTURES = join(HERE, "fixtures");
+const OUT = join(HERE, "out");
+
+const BASELINE_ID = "current";
+
+type CandidateRun = {
+  id: string;
+  label: string;
+  res: ExtractionResult;
+  chars: number;
+  words: number;
+  ms: number;
+  /** Line-level delta vs the baseline candidate; null for the baseline itself. */
+  diffLines: number | null;
+};
+
+function wordCount(s: string): number {
+  const m = s.trim().match(/\S+/g);
+  return m ? m.length : 0;
+}
+
+/**
+ * Symmetric line-multiset difference — a cheap "how far apart are these"
+ * signal, not a positional diff. 0 means line-identical output; small numbers
+ * mean a handful of changed lines; read the .compare.md to see which.
+ */
+function lineDelta(a: string, b: string): number {
+  if (a === b) return 0;
+  const counts = new Map<string, number>();
+  for (const line of a.split("\n")) counts.set(line, (counts.get(line) ?? 0) + 1);
+  for (const line of b.split("\n")) counts.set(line, (counts.get(line) ?? 0) - 1);
+  let delta = 0;
+  for (const n of counts.values()) delta += Math.abs(n);
+  return delta;
+}
+
+/** Make a title safe for a one-line Markdown table cell. */
+function tableCell(title: string | null): string {
+  return (title ?? "—")
+    .replace(/[\r\n]+/g, " ")
+    .slice(0, 60)
+    .replace(/\|/g, "\\|");
+}
+
+async function main() {
+  mkdirSync(OUT, { recursive: true });
+  const fixtures = readdirSync(FIXTURES)
+    .filter((f) => f.endsWith(".html"))
+    .sort();
+
+  if (fixtures.length === 0) {
+    console.error(
+      `No .html fixtures in ${FIXTURES}. Add some via urls.ts + extraction:fidelity:fetch.`,
+    );
+    process.exit(1);
+  }
+
+  // Hard gate: a fixture without a URL mapping would have its relative links
+  // resolved against a bogus base, silently corrupting the very comparison
+  // this harness exists to make.
+  const unmapped = fixtures.filter((f) => !(f in FIXTURE_URLS));
+  if (unmapped.length > 0) {
+    console.error(
+      `Fixtures missing a FIXTURE_URLS entry in urls.ts (required — candidates resolve relative links against it):\n` +
+        unmapped.map((f) => `  - ${f}`).join("\n"),
+    );
+    process.exit(1);
+  }
+
+  const allRuns: { fixture: string; runs: CandidateRun[] }[] = [];
+
+  for (const file of fixtures) {
+    const name = file.replace(/\.html$/, "");
+    const html = readFileSync(join(FIXTURES, file), "utf8");
+    const url = FIXTURE_URLS[file]!;
+
+    const runs: CandidateRun[] = [];
+    for (const c of candidates) {
+      const t0 = performance.now();
+      const res = await c.run(html, url);
+      runs.push({
+        id: c.id,
+        label: c.label,
+        res,
+        chars: res.markdown.length,
+        words: wordCount(res.markdown),
+        ms: Math.round(performance.now() - t0),
+        diffLines: null,
+      });
+    }
+    const baseline = runs.find((r) => r.id === BASELINE_ID);
+    for (const r of runs) {
+      if (baseline && r.id !== BASELINE_ID)
+        r.diffLines = lineDelta(baseline.res.markdown, r.res.markdown);
+      writeFileSync(
+        join(OUT, `${name}.${r.id}.md`),
+        `<!-- ${r.label}\n     fixture: ${file}\n     url: ${url}\n     chars=${r.chars} words=${r.words} path=${r.res.note} ms=${r.ms} -->\n\n${r.res.markdown}\n`,
+      );
+    }
+    allRuns.push({ fixture: name, runs });
+
+    // Side-by-side compare report for this fixture.
+    const parts: string[] = [
+      `# Extraction comparison: ${name}`,
+      "",
+      `Source: ${url}`,
+      `Input HTML: ${html.length} chars`,
+      "",
+      "| candidate | title | chars | words | Δlines vs current | path | ms |",
+      "| --- | --- | ---: | ---: | ---: | --- | ---: |",
+      ...runs.map(
+        (r) =>
+          `| ${r.id} | ${tableCell(r.res.title)} | ${r.chars} | ${r.words} | ${r.diffLines ?? "—"} | ${r.res.note} | ${r.ms} |`,
+      ),
+      "",
+    ];
+    for (const r of runs) {
+      parts.push(
+        "",
+        "---",
+        "",
+        `## ${r.label}`,
+        `\`${r.id}\` · ${r.chars} chars · ${r.words} words · ${r.res.note}`,
+        "",
+        r.res.markdown || "_(empty)_",
+      );
+    }
+    writeFileSync(join(OUT, `${name}.compare.md`), parts.join("\n") + "\n");
+  }
+
+  // SUMMARY.md + console table.
+  const header = ["fixture", "candidate", "chars", "words", "Δlines vs current", "path", "ms"];
+  const summaryLines = [
+    "# Extraction fidelity summary",
+    "",
+    "Generated by `bun run extraction:fidelity`. Higher word count is not",
+    "automatically better — open the `.compare.md` files and read the Markdown.",
+    "Δlines is the line-level delta vs the `current` candidate (0 = identical",
+    "output). Watch for: dropped main content, retained nav/footer noise,",
+    "relative vs absolute links, and whether Readability fell back to the",
+    "cheerio path.",
+    "",
+    `| ${header.join(" | ")} |`,
+    `| ${header.map(() => "---").join(" | ")} |`,
+    ...allRuns.flatMap(({ fixture, runs }) =>
+      runs.map(
+        (r) =>
+          `| ${fixture} | ${r.id} | ${r.chars} | ${r.words} | ${r.diffLines ?? "—"} | ${r.res.note} | ${r.ms} |`,
+      ),
+    ),
+  ];
+  writeFileSync(join(OUT, "SUMMARY.md"), summaryLines.join("\n") + "\n");
+
+  // Console: grouped per fixture for quick scanning.
+  const pad = (s: string, n: number) => s.padEnd(n);
+  const numr = (v: number | null, w: number) => String(v ?? "—").padStart(w);
+  console.log(
+    `\nFixtures: ${fixtures.length}  ·  Candidates: ${candidates.length}  ·  Output: ${OUT}\n`,
+  );
+  console.log(
+    pad("fixture", 30),
+    pad("candidate", 22),
+    "chars",
+    "  words",
+    " Δlines",
+    "  ms",
+    "  path",
+  );
+  for (const { fixture, runs } of allRuns) {
+    runs.forEach((r, i) => {
+      console.log(
+        pad(i === 0 ? fixture : "", 30),
+        pad(r.id, 22),
+        numr(r.chars, 5),
+        numr(r.words, 7),
+        numr(r.diffLines, 7),
+        numr(r.ms, 4),
+        "  " + r.res.note,
+      );
+    });
+  }
+  console.log(`\nRead side-by-side: ${join(OUT, "<fixture>.compare.md")}`);
+  console.log(`Summary table:     ${join(OUT, "SUMMARY.md")}\n`);
+}
+
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});
