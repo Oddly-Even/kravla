@@ -44,10 +44,12 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
+      # No registry-url here: setup-node's registry-url writes an .npmrc
+      # auth stanza + exports a placeholder NODE_AUTH_TOKEN, which makes npm
+      # prefer token auth over OIDC trusted publishing (publish then 404s).
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          registry-url: https://registry.npmjs.org
       # OIDC trusted publishing needs npm >= 11.5.1; node 22 ships an older one.
       - run: npm install -g npm@latest
       - run: bun install --frozen-lockfile

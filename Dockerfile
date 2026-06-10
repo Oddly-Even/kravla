@@ -22,7 +22,6 @@ COPY --from=build /app/packages/core/package.json packages/core/
 COPY --from=build /app/packages/service/package.json packages/service/
 RUN bun install --frozen-lockfile --production
 COPY --from=build /app/packages/core/dist packages/core/dist
-COPY --from=build /app/packages/core/data packages/core/data
 COPY --from=build /app/packages/service/dist packages/service/dist
 
 # Crawlee needs a writable scratch dir for its per-call mkdtemp storage
