@@ -1,4 +1,4 @@
-name: Release image
+name: Release
 
 on:
   push:
@@ -7,6 +7,7 @@ on:
 permissions:
   contents: read
   packages: write
+  id-token: write # npm provenance
 
 jobs:
   image:
@@ -32,3 +33,28 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+  npm:
+    runs-on: ubuntu-latest
+    # Skips cleanly until the NPM_TOKEN repo secret is configured.
+    if: ${{ vars.NPM_PUBLISH_ENABLED == 'true' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+      - run: bun install --frozen-lockfile
+      - run: bun run build
+      # Prereleases (0.1.0-alpha.N) land on the `next` dist-tag; stable on `latest`.
+      - name: Publish @oddlyeven/kravla
+        working-directory: packages/core
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if [[ "$VERSION" == *-* ]]; then TAG=next; else TAG=latest; fi
+          npm publish --provenance --access public --tag "$TAG"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
