@@ -17,6 +17,9 @@ RUN bun run build
 FROM oven/bun:1-slim
 WORKDIR /app
 ENV NODE_ENV=production
+# Crawlee >=3.17 defaults systemInfoV2 on; its memory snapshotter spawns `ps`,
+# which the slim base image lacks (procps).
+RUN apt-get update && apt-get install -y --no-install-recommends procps && rm -rf /var/lib/apt/lists/*
 COPY --from=build /app/package.json /app/bun.lock ./
 COPY --from=build /app/packages/core/package.json packages/core/
 COPY --from=build /app/packages/service/package.json packages/service/

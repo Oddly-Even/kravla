@@ -69,6 +69,10 @@ curl -N -X POST http://localhost:8080/v1/crawls \
   -d '{"url": "https://www.example.se", "depth": 1, "limits": {"max_pages": 50}}'
 ```
 
+Rolling your own image instead? Crawlee ≥ 3.17 measures memory by spawning `ps`, so slim/distroless
+bases need `procps` installed (the shipped Dockerfile does this) — otherwise every snapshot logs
+`Executable not found in $PATH: "ps"`.
+
 Each line is one event (`robots`, `page`, `failed`, …) ending with a terminal `done` summary.
 Webhook delivery (HMAC-signed batches + job status/cancel endpoints), the `/v1/preview` dry-run,
 and the full env-var reference are documented in
