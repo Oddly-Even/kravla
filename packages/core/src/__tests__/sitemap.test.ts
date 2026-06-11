@@ -32,6 +32,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { gzipSync } from "node:zlib";
 import { createServer, type Server } from "node:http";
 import {
+  alignEntryHostWithSeed,
   discoverSitemapLocations,
   loadSitemap,
   probeSitemapStatus,
@@ -141,6 +142,54 @@ describe("loadSitemap", () => {
     expect(result.errors).toEqual([]);
     expect(Object.keys(result.subStates)).toHaveLength(1);
     expect(result.hash.length).toBeGreaterThan(0);
+  });
+
+  it("aligns www-twin entry hosts to the seed host (Drupal apex/www mismatch)", async () => {
+    // ai.se shape: the site canonicalizes to one host, but the sitemap
+    // declares every <loc> on its www-twin. Needs a name-based host — a
+    // `www.` twin of an IP literal does not parse as a URL — so this test
+    // runs its own fixture server on `localhost` instead of the shared
+    // 127.0.0.1 one. Entries on the www-twin must come back rewritten onto
+    // the seed host; a genuine subdomain stays as declared — it is
+    // correctly out of scope.
+    const s2 = createServer((req, res) => {
+      if (req.url === "/sitemap.xml") {
+        const seedHost = `http://localhost:${p2}`;
+        res.setHeader("content-type", "application/xml");
+        res.end(
+          urlsetXml([
+            { loc: `http://www.localhost:${p2}/page-1`, lastmod: "2025-05-20T08:00:00Z" },
+            { loc: `http://www.localhost:${p2}/page-2?lang=sv`, lastmod: "2025-05-21T08:00:00Z" },
+            { loc: `http://en.localhost:${p2}/page-3` },
+            { loc: `${seedHost}/page-4` },
+          ]),
+        );
+      } else {
+        res.statusCode = 404;
+        res.end("not found");
+      }
+    });
+    await new Promise<void>((resolve) => s2.listen(0, "localhost", resolve));
+    const addr = s2.address();
+    if (!addr || typeof addr === "string") throw new Error("server not listening");
+    const p2 = addr.port;
+    try {
+      const seed = `http://localhost:${p2}`;
+      const result = await loadSitemap(seed);
+      expect(result.errors).toEqual([]);
+      expect(result.entries.map((e) => e.url)).toEqual([
+        `${seed}/page-1`,
+        `${seed}/page-2?lang=sv`,
+        `http://en.localhost:${p2}/page-3`,
+        `${seed}/page-4`,
+      ]);
+      // The sub-state hash is computed over the aligned entries, so a reload
+      // of the identical sitemap stays a hash match (short-circuit safe).
+      const r2 = await loadSitemap(seed);
+      expect(r2.hash).toBe(result.hash);
+    } finally {
+      await new Promise<void>((resolve) => s2.close(() => resolve()));
+    }
   });
 
   it("recurses through a sitemap index → sub-sitemap (Sitevision style)", async () => {
@@ -446,5 +495,37 @@ describe("probeSitemapStatus / discovery", () => {
     const status = await probeSitemapStatus(dead);
     expect(status.status).toBe("unreachable");
     expect(status.locations).toEqual([]);
+  });
+});
+
+describe("alignEntryHostWithSeed", () => {
+  it("rewrites an apex entry onto a www seed (the ai.se case)", () => {
+    expect(alignEntryHostWithSeed("https://ai.se/en/news?p=1", "www.ai.se")).toBe(
+      "https://www.ai.se/en/news?p=1",
+    );
+  });
+
+  it("rewrites a www entry onto an apex seed", () => {
+    expect(alignEntryHostWithSeed("https://www.ai.se/x", "ai.se")).toBe("https://ai.se/x");
+  });
+
+  it("preserves scheme, port, query, and fragment", () => {
+    expect(alignEntryHostWithSeed("http://ai.se:8080/a?b=1#c", "www.ai.se")).toBe(
+      "http://www.ai.se:8080/a?b=1#c",
+    );
+  });
+
+  it("leaves a genuine subdomain untouched", () => {
+    expect(alignEntryHostWithSeed("https://en.ai.se/x", "www.ai.se")).toBe("https://en.ai.se/x");
+    expect(alignEntryHostWithSeed("https://en.ai.se/x", "ai.se")).toBe("https://en.ai.se/x");
+  });
+
+  it("leaves an unrelated host untouched", () => {
+    expect(alignEntryHostWithSeed("https://other.se/x", "www.ai.se")).toBe("https://other.se/x");
+  });
+
+  it("returns same-host and unparseable entries verbatim", () => {
+    expect(alignEntryHostWithSeed("https://ai.se/x", "ai.se")).toBe("https://ai.se/x");
+    expect(alignEntryHostWithSeed("/relative/path", "ai.se")).toBe("/relative/path");
   });
 });

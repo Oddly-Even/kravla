@@ -537,6 +537,34 @@ function decodeXmlEntities(s: string): string {
   });
 }
 
+/**
+ * Rewrite a sitemap entry URL onto the seed's hostname when the two differ
+ * only by a leading `www.`. Drupal/WordPress sites are frequently configured
+ * with the apex as the sitemap base URL while the web server redirects apex
+ * → www (ai.se does exactly this): every `<loc>` then sits on a host that
+ * `isInSeedScope`'s hostname-equality check rejects, and the crawl silently
+ * produces zero pages. Rewriting the entries — rather than relaxing the
+ * scope check — keeps enqueued URLs, stored page URLs (post-redirect), and
+ * the per-URL lastmod skip aligned on one host, and saves a redirect per
+ * fetch. Real subdomains are left untouched: only an exact `www.` twin of
+ * the seed hostname is rewritten.
+ */
+export function alignEntryHostWithSeed(entryUrl: string, seedHostname: string): string {
+  let u: URL;
+  try {
+    u = new URL(entryUrl);
+  } catch {
+    return entryUrl;
+  }
+  const host = u.hostname;
+  if (host === seedHostname) return entryUrl;
+  if (host === `www.${seedHostname}` || `www.${host}` === seedHostname) {
+    u.hostname = seedHostname;
+    return u.toString();
+  }
+  return entryUrl;
+}
+
 function hashEntries(entries: SitemapEntry[]): string {
   const lines = entries.map((e) => `${e.url}\t${e.lastmod?.toISOString() ?? ""}`).sort();
   return createHash("sha256").update(lines.join("\n")).digest("hex");
@@ -554,6 +582,12 @@ export async function loadSitemap(
 ): Promise<SitemapLoadResult> {
   const ctx = resolveCtx(options);
   const locations = await discoverSitemapLocations(seedUrl, options);
+  let seedHostname: string | null = null;
+  try {
+    seedHostname = new URL(seedUrl).hostname;
+  } catch {
+    // Unparseable seed — entries are returned exactly as declared.
+  }
   const allEntries: SitemapEntry[] = [];
   const subStates: Record<string, SitemapSubState> = {};
   const errors: SitemapLoadError[] = [];
@@ -608,13 +642,22 @@ export async function loadSitemap(
     }
 
     if (parsed.kind === "urlset") {
-      allEntries.push(...parsed.entries);
+      // Align www-twin hosts before anything downstream sees the entries, so
+      // the sub-state hash, the whole-index hash, and the scope filter all
+      // operate on the same URLs the crawler will enqueue.
+      const entries = seedHostname
+        ? parsed.entries.map((e) => {
+            const aligned = alignEntryHostWithSeed(e.url, seedHostname);
+            return aligned === e.url ? e : { ...e, url: aligned };
+          })
+        : parsed.entries;
+      allEntries.push(...entries);
       subStates[url] = {
         // lastmod from the parent `<sitemap><lastmod>`, if any. A top-level
         // urlset has none → null, and sub-sitemap skipping is a no-op there.
         lastmod: parentLastmod,
-        urlCount: parsed.entries.length,
-        hash: hashEntries(parsed.entries),
+        urlCount: entries.length,
+        hash: hashEntries(entries),
       };
       return;
     }
