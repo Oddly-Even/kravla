@@ -27,7 +27,7 @@ import { join } from "node:path";
 // Direct @crawlee/* subpackage imports — see preview.ts for the reason.
 import { CheerioCrawler } from "@crawlee/cheerio";
 import { Configuration } from "@crawlee/core";
-import { isInSeedScope, pathPrefixGlobs } from "./scope";
+import { isInSeedScope, pathPrefixGlobs, sitemapSeedScopeUrl } from "./scope";
 import { extractContent } from "./extract";
 import { runEnrichers } from "./enrichers";
 import { runDetectors, type DetectorMatch } from "./detectors";
@@ -191,6 +191,13 @@ export type CrawlRunnerInput = {
   cacheHints?: Map<string, CacheHint>;
   /** Pre-resolved URLs for sitemap mode. Bypasses sitemap fetch when provided. */
   sitemapUrls?: string[];
+  /**
+   * Sitemap locations the URLs were loaded from
+   * (`SitemapLoadResult.discoveredLocations`). Lets the runner recognize a
+   * seed that points at the sitemap document itself and strip the sitemap
+   * part, widening scope filtering to the site root.
+   */
+  sitemapDiscoveredLocations?: string[];
   /** URLs already processed in a prior attempt. Skipped to avoid re-embedding. */
   skipUrls?: Set<string>;
   onPage?: (page: CrawlPage) => Promise<void>;
@@ -678,7 +685,11 @@ export async function runCrawl(input: CrawlRunnerInput): Promise<CrawlOutcome> {
       // because failures need to be surfaced to the crawl run, not
       // silently absorbed by the worker.
       const urls = input.sitemapUrls ?? [];
-      const scopedUrls = urls.filter((u) => isInSeedScope(input.seedUrl, u) && !isNonHtmlUrl(u));
+      // A seed pointing at the sitemap document itself scopes to the site
+      // root (sitemap part stripped) — page URLs never live under the
+      // sitemap's own path, so seed-prefix scope would filter out every entry.
+      const scopeSeed = sitemapSeedScopeUrl(input.seedUrl, input.sitemapDiscoveredLocations);
+      const scopedUrls = urls.filter((u) => isInSeedScope(scopeSeed, u) && !isNonHtmlUrl(u));
       const robotAllowedUrls: string[] = [];
       for (const u of scopedUrls) {
         if (robots && !robots.allows(u)) {

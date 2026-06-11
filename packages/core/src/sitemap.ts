@@ -158,7 +158,21 @@ export async function probeSitemapStatus(
   options?: CrawlerRuntimeOptions,
 ): Promise<{ status: SitemapProbeStatus; locations: string[] }> {
   const ctx = resolveCtx(options);
-  const seedOrigin = new URL(seedUrl).origin;
+  const seed = new URL(seedUrl);
+  const seedOrigin = seed.origin;
+
+  // A seed may point at the sitemap document itself
+  // (`https://host/sv/sitemap.xml` — sources created by older Eneo versions
+  // are stored that way). When the seed's own path serves sitemap XML it IS
+  // the sitemap — trust that explicit pointer over robots.txt and the
+  // default-path sweep, which can resolve to a different sitemap than the
+  // one the source was saved with.
+  // Strict sniff (root `<urlset>`/`<sitemapindex>` required, `<?xml` prolog
+  // alone is not enough): an XHTML page must not turn an ordinary
+  // path-scoped seed into a site-root sitemap source.
+  if (seed.pathname.replace(/\/+$/, "") !== "" && (await probeSitemapXml(seedUrl, ctx, true))) {
+    return { status: "path", locations: [seedUrl] };
+  }
 
   const fromRobots = await sitemapsFromRobots(seedOrigin, ctx);
   if (fromRobots.length > 0) return { status: "robots", locations: fromRobots };
@@ -298,8 +312,15 @@ async function readUpTo(res: Response, maxBytes: number): Promise<Buffer> {
  * `content-encoding: gzip`) can't be partial-decompressed reliably, so we
  * accept on the gzip magic bytes and let `loadSitemap` fully decode+parse it.
  * Rejects 202 (bot-challenge) and any non-2xx. Returns false on any failure.
+ *
+ * `strict` requires a `<urlset>`/`<sitemapindex>` root marker instead of the
+ * default lenient match that also accepts a bare `<?xml` prolog. Used by the
+ * seed-self probe, where an XHTML page's prolog would be a false positive;
+ * the default-path probes keep the lenient match (those paths are
+ * sitemap-only locations, and the prolog can precede a root element that
+ * sits beyond the sniff window on exotic emitters).
  */
-async function probeSitemapXml(url: string, ctx: SitemapCtx): Promise<boolean> {
+async function probeSitemapXml(url: string, ctx: SitemapCtx, strict = false): Promise<boolean> {
   const ac = new AbortController();
   const timer = setTimeout(() => ac.abort(), PROBE_TIMEOUT_MS);
   try {
@@ -321,7 +342,9 @@ async function probeSitemapXml(url: string, ctx: SitemapCtx): Promise<boolean> {
       return buf.length >= 2 && buf[0] === 0x1f && buf[1] === 0x8b;
     }
     const head = buf.toString("utf8");
-    return /<\?xml|<urlset|<sitemapindex|<sitemap[\s>]/i.test(head);
+    return strict
+      ? /<urlset|<sitemapindex/i.test(head)
+      : /<\?xml|<urlset|<sitemapindex|<sitemap[\s>]/i.test(head);
   } catch {
     return false;
   } finally {

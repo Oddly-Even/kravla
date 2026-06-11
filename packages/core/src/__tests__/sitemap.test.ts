@@ -25,6 +25,8 @@
  *   - Discovery / probeSitemapStatus: SiteVision /sitemapindex.xml,
  *     soft-404 + 202 rejection (body-sniff), and the robots/path/none/
  *     unreachable status taxonomy
+ *   - Seed-is-the-sitemap (legacy Eneo convention): the seed's own path
+ *     serving sitemap XML wins discovery; XHTML `<?xml` prologs don't
  */
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { gzipSync } from "node:zlib";
@@ -385,6 +387,48 @@ describe("probeSitemapStatus / discovery", () => {
     const status = await probeSitemapStatus(base());
     expect(status.status).toBe("robots");
     expect(status.locations).toEqual([`${base()}/custom/my-sitemap.xml`]);
+  });
+
+  it("uses the seed itself when it points directly at a sitemap (legacy Eneo seeds)", async () => {
+    // Old Eneo versions stored sitemap sources with the sitemap path
+    // included. The seed's own document must win over robots.txt — the
+    // source was saved against THAT sitemap, not whatever robots points
+    // at today.
+    setRoutes({
+      "/robots.txt": {
+        status: 200,
+        contentType: "text/plain",
+        body: `User-agent: *\nSitemap: ${base()}/other.xml`,
+      },
+      "/other.xml": xmlRoute(urlsetXml([{ loc: "/from-robots" }])),
+      "/sv/custom-sitemap.xml": xmlRoute(
+        urlsetXml([{ loc: "/a", lastmod: "2025-05-20T00:00:00Z" }, { loc: "/b" }]),
+      ),
+    });
+
+    const seed = `${base()}/sv/custom-sitemap.xml`;
+    const status = await probeSitemapStatus(seed);
+    expect(status.status).toBe("path");
+    expect(status.locations).toEqual([seed]);
+
+    const result = await loadSitemap(seed);
+    expect(result.discoveredLocations).toEqual([seed]);
+    expect(result.entries.map((e) => e.url)).toEqual(["/a", "/b"]);
+    expect(result.errors).toEqual([]);
+  });
+
+  it("does not mistake an XHTML page seed (<?xml prolog) for a sitemap", async () => {
+    setRoutes({
+      "/upplev": {
+        status: 200,
+        contentType: "application/xhtml+xml",
+        body: `<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml"><body>ok</body></html>`,
+      },
+      "/": { status: 200, contentType: "text/html", body: "ok" },
+    });
+    const status = await probeSitemapStatus(`${base()}/upplev`);
+    expect(status.status).toBe("none");
+    expect(status.locations).toEqual([]);
   });
 
   it("status: none when the host is up but serves no sitemap", async () => {

@@ -24,7 +24,7 @@ import { CheerioCrawler } from "@crawlee/cheerio";
 import { Configuration, LogLevel, log as crawleeLog } from "@crawlee/core";
 import { noopLogger } from "./logger";
 import { buildUserAgent, DEFAULT_USER_AGENT, type CrawlerRuntimeOptions } from "./options";
-import { isInSeedScope, pathPrefixGlobs } from "./scope";
+import { isInSeedScope, pathPrefixGlobs, sitemapSeedScopeUrl } from "./scope";
 import { loadSitemap } from "./sitemap";
 import { canonicalizeSourceUrl } from "./canonical-url";
 import { isExcludedCrawlUrl } from "./url-exclusions";
@@ -186,9 +186,12 @@ async function probeSitemap(
   // HTTP/2 bug silently returns 0 URLs on CDN-fronted .se hosts, so the preview
   // disagreed with both the gate probe and the real crawl.
   const { entries, discoveredLocations } = await loadSitemap(seedUrl, options);
+  // A seed pointing at the sitemap document itself scopes to the site root
+  // (sitemap part stripped), mirroring crawl-runner.ts's sitemap branch.
+  const scopeSeed = sitemapSeedScopeUrl(seedUrl, discoveredLocations);
   const inScope = new Set<string>();
   for (const e of entries) {
-    if (isInSeedScope(seedUrl, e.url)) inScope.add(e.url);
+    if (isInSeedScope(scopeSeed, e.url)) inScope.add(e.url);
   }
 
   return {

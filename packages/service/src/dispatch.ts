@@ -121,7 +121,11 @@ export async function runCrawlJob(args: {
             error_message: `sitemap load: ${err.message}`,
           });
         }
-        outcome = await runCrawl({ ...input, sitemapUrls: sitemap.entries.map((e) => e.url) });
+        outcome = await runCrawl({
+          ...input,
+          sitemapUrls: sitemap.entries.map((e) => e.url),
+          sitemapDiscoveredLocations: sitemap.discoveredLocations,
+        });
         break;
       }
       case "crawl":
