@@ -52,7 +52,18 @@ export function pageToWire(p: CrawlPage) {
     title: p.title,
     raw_text: p.rawText,
     etag: p.etag,
+    // Verbatim HTTP Last-Modified header — a conditional-GET cache hint,
+    // not a content date. The normalized content dates are below.
     last_modified: p.lastModified,
+    published_at: p.publishedAt,
+    modified_at: p.modifiedAt,
+    date_sources: p.dateSources
+      ? {
+          ...(p.dateSources.publishedAt ? { published_at: p.dateSources.publishedAt } : {}),
+          ...(p.dateSources.modifiedAt ? { modified_at: p.dateSources.modifiedAt } : {}),
+        }
+      : null,
+    fetched_at: p.fetchedAt,
     file_links: p.fileLinks.map((f) => ({
       url: f.url,
       anchor_text: f.anchorText,

@@ -9,6 +9,7 @@ export * from "./logger";
 export * from "./options";
 
 export * from "./crawl-runner";
+export * from "./page-dates";
 export * from "./preview";
 export * from "./robots";
 export * from "./sitemap";

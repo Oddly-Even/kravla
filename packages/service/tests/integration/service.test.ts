@@ -196,6 +196,91 @@ describe("stream mode", () => {
     expect(done.outcome.ok_count).toBe(3);
   });
 
+  it("emits normalized date fields resolved from page metadata", async () => {
+    fixtures.setFixtures([
+      {
+        path: "/",
+        title: "Dated",
+        bodyHtml: "",
+        rawBody:
+          "<!doctype html><html><head><title>Dated</title>" +
+          '<meta property="article:published_time" content="2026-05-20T08:00:00Z">' +
+          "</head><body><p>Dated content here.</p></body></html>",
+      },
+    ]);
+    try {
+      const res = await fetch(`${service.url}/v1/crawls`, {
+        method: "POST",
+        headers: authHeaders,
+        body: JSON.stringify({ url: `${fixtures.url}/`, crawl_type: "crawl", depth: 0 }),
+      });
+      const events = (await res.text())
+        .trim()
+        .split("\n")
+        .map((l) => JSON.parse(l) as { type: string });
+      const page = (
+        events.find((e) => e.type === "page") as unknown as {
+          page: {
+            published_at: string | null;
+            modified_at: string | null;
+            date_sources: Record<string, string> | null;
+            fetched_at: string;
+          };
+        }
+      ).page;
+      expect(page.published_at).toBe("2026-05-20T08:00:00.000Z");
+      expect(page.modified_at).toBeNull();
+      expect(page.date_sources).toEqual({ published_at: "meta-article" });
+      expect(Date.parse(page.fetched_at)).not.toBeNaN();
+    } finally {
+      fixtures.setFixtures([
+        {
+          path: "/",
+          title: "Root",
+          bodyHtml: '<p>Welcome to the fixture town.</p><a href="/a">A</a><a href="/b">B</a>',
+        },
+        { path: "/a", title: "Page A", bodyHtml: "<p>Alpha content here.</p>" },
+        { path: "/b", title: "Page B", bodyHtml: "<p>Beta content here.</p>" },
+      ]);
+    }
+  });
+
+  it("threads sitemap lastmod into modified_at on service-loaded sitemap crawls", async () => {
+    // Same three pages the default sitemap advertises, now with one lastmod.
+    fixtures.setSitemapEntries([
+      { path: "/" },
+      { path: "/a", lastmod: "2026-05-10T00:00:00Z" },
+      { path: "/b" },
+    ]);
+    const res = await fetch(`${service.url}/v1/crawls`, {
+      method: "POST",
+      headers: authHeaders,
+      body: JSON.stringify({ url: fixtures.url, crawl_type: "sitemap", depth: 0 }),
+    });
+    const events = (await res.text())
+      .trim()
+      .split("\n")
+      .map((l) => JSON.parse(l) as { type: string });
+    const pages = events.filter((e) => e.type === "page") as unknown as {
+      page: {
+        url: string;
+        modified_at: string | null;
+        date_sources: Record<string, string> | null;
+        metadata: Record<string, unknown> | null;
+      };
+    }[];
+    const pageA = pages.find((p) => p.page.url === `${fixtures.url}/a`)!.page;
+    expect(pageA.modified_at).toBe("2026-05-10T00:00:00.000Z");
+    expect(pageA.date_sources).toEqual({ modified_at: "sitemap-lastmod" });
+    // The raw lastmod stays inspectable on metadata alongside the other
+    // per-source raw values, independent of which source won the cascade.
+    expect(pageA.metadata?.sitemap).toEqual({ lastmod: "2026-05-10T00:00:00.000Z" });
+    const pageB = pages.find((p) => p.page.url === `${fixtures.url}/b`)!.page;
+    expect(pageB.modified_at).toBeNull();
+    expect(pageB.date_sources).toBeNull();
+    expect(pageB.metadata?.sitemap).toBeUndefined();
+  });
+
   it("treats conditional-GET 304s as unchanged events", async () => {
     fixtures.setFixtures([
       { path: "/", title: "Root", bodyHtml: "<p>Etagged page.</p>", etag: '"v1"' },

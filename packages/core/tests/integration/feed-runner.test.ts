@@ -121,6 +121,14 @@ describe("feed runner", () => {
     expect(one.metadata?.provider).toBe("feed");
     expect(one.metadata?.link).toBe(`${server.url}/articles/one`);
     expect(one.rawText).toContain("Summary one.");
+    // pubDate lands as the normalized first-class publish date.
+    expect(one.publishedAt).toBe("2025-06-03T10:00:00.000Z");
+    expect(one.modifiedAt).toBeNull();
+    expect(one.dateSources).toEqual({ publishedAt: "feed" });
+    expect(one.fetchedAt).toBeTruthy();
+    // Entry Two has no dates at all.
+    expect(two.publishedAt).toBeNull();
+    expect(two.dateSources).toBeNull();
 
     // No guid on the second item → the link becomes the id.
     expect(two.url).toBe(`${server.url}/docs/two.pdf`);
@@ -132,6 +140,10 @@ describe("feed runner", () => {
     expect(pages[0]!.url).toBe("atom-id-1");
     expect(pages[0]!.metadata?.link).toBe(`${server.url}/articles/atom-one`);
     expect(pages[0]!.rawText).toContain("Atom summary.");
+    // The feed parser folds Atom <updated> into the item's `published`
+    // (rss-parser's isoDate mapping), so it surfaces as publishedAt here.
+    expect(pages[0]!.publishedAt).toBe("2025-06-03T10:00:00.000Z");
+    expect(pages[0]!.dateSources?.publishedAt).toBe("feed");
   });
 
   it("without linked-document indexing, leaves entry text and fileLinks bare", async () => {

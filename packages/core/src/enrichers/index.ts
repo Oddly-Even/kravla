@@ -26,8 +26,9 @@ import type { Enricher, Enrichment } from "./types";
 import headMeta from "./head-meta";
 import jsonLd from "./json-ld";
 import sitevisionPortlets from "./sitevision-portlets";
+import timeElements from "./time-elements";
 
-export const ENRICHERS: Enricher[] = [headMeta, jsonLd, sitevisionPortlets];
+export const ENRICHERS: Enricher[] = [headMeta, jsonLd, sitevisionPortlets, timeElements];
 
 const MAX_METADATA_BYTES = 16 * 1024;
 const MAX_EXTRA_CHUNKS = 40;

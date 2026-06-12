@@ -23,6 +23,7 @@ import { noopLogger } from "../logger";
 import { buildUserAgent, DEFAULT_USER_AGENT } from "../options";
 import { extractContent } from "../extract";
 import { fileLinkForUrl, isNonHtmlUrl, type FileLink } from "../file-links";
+import { toIsoDate, type PageDateSources } from "../page-dates";
 import type { CrawlOutcome, CrawlPage, CrawlRunnerInput } from "../crawl-runner";
 import { fetchAndParseFeed } from "./parse";
 import { FEED_PROVIDER, type FeedEntryMetadata, type FeedItem } from "./types";
@@ -102,12 +103,24 @@ async function buildPage(
     }
   }
 
+  // Feed items state their own dates — normalize them straight onto the
+  // first-class fields (the raw strings stay in `metadata.published/updated`).
+  const publishedAt = toIsoDate(item.published);
+  const modifiedAt = toIsoDate(item.updated);
+  const dateSources: PageDateSources = {};
+  if (publishedAt) dateSources.publishedAt = "feed";
+  if (modifiedAt) dateSources.modifiedAt = "feed";
+
   return {
     url: item.id,
     title: item.title,
     rawText: textParts.join("\n\n"),
     etag: null,
     lastModified: null,
+    publishedAt,
+    modifiedAt,
+    dateSources: publishedAt || modifiedAt ? dateSources : null,
+    fetchedAt: new Date().toISOString(),
     fileLinks,
     metadata,
   };

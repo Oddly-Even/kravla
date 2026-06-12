@@ -39,6 +39,7 @@ import {
   type RobotsSnapshot,
 } from "./robots";
 import { isExcludedCrawlUrl } from "./url-exclusions";
+import { resolvePageDates, type PageDateSources } from "./page-dates";
 import { noopLogger, type Logger } from "./logger";
 
 // Defaults for the four runtime knobs. Callers override per run.
@@ -56,8 +57,28 @@ export type CrawlPage = {
   rawText: string;
   /** Response `ETag` header, if any. Persisted for the next refresh's `If-None-Match`. */
   etag: string | null;
-  /** Response `Last-Modified` header, if any. Persisted verbatim for `If-Modified-Since`. */
+  /**
+   * Response `Last-Modified` header, if any. Persisted verbatim for
+   * `If-Modified-Since` — a cache hint, NOT a content date. The normalized
+   * content-modification date lives in `modifiedAt`.
+   */
   lastModified: string | null;
+  /**
+   * Normalized publish/creation date (full ISO 8601 UTC) resolved from the
+   * page's own date signals (JSON-LD, `article:*` meta, dcterms, `<time>`),
+   * or null when the page carries none. See `resolvePageDates`.
+   */
+  publishedAt: string | null;
+  /**
+   * Normalized content-modification date (full ISO 8601 UTC) from the same
+   * cascade plus the sitemap's per-URL `<lastmod>`. The HTTP `Last-Modified`
+   * header never feeds this — on CMS pages it is template render time.
+   */
+  modifiedAt: string | null;
+  /** Which signal each resolved date came from. Null when both dates are null. */
+  dateSources: PageDateSources | null;
+  /** When this page was fetched by the crawler (ISO 8601 UTC). Always set. */
+  fetchedAt: string;
   fileLinks: FileLink[];
   /**
    * Specialised crawlers (Open ePlatform, etc.) attach a structured record
@@ -150,6 +171,9 @@ export type CacheHint = {
   lastModified: string | null;
 };
 
+/** One sitemap-mode URL: bare, or with the sitemap entry's `<lastmod>` as an ISO string. */
+export type SitemapUrlInput = string | { url: string; lastmod?: string | null };
+
 export type CrawlRunnerInput = {
   seedUrl: string;
   // `open_eplatform` sources reach the dispatcher through this input shape
@@ -196,8 +220,13 @@ export type CrawlRunnerInput = {
    * (e.g. for a manual `force: true` run).
    */
   cacheHints?: Map<string, CacheHint>;
-  /** Pre-resolved URLs for sitemap mode. Bypasses sitemap fetch when provided. */
-  sitemapUrls?: string[];
+  /**
+   * Pre-resolved URLs for sitemap mode. Bypasses sitemap fetch when provided.
+   * Entries may carry the sitemap's per-URL `<lastmod>` (ISO string) — it is
+   * threaded through request userData into the page's `modifiedAt` cascade.
+   * Plain strings keep working for callers without lastmod data.
+   */
+  sitemapUrls?: SitemapUrlInput[];
   /**
    * Sitemap locations the URLs were loaded from
    * (`SitemapLoadResult.discoveredLocations`). Lets the runner recognize a
@@ -590,6 +619,23 @@ export async function runCrawl(input: CrawlRunnerInput): Promise<CrawlOutcome> {
           { $, url, headers: detectorHeaders },
           logger.child({ component: "detectors", url }),
         );
+        // Normalized content dates from the enriched metadata + the sitemap
+        // entry's <lastmod> (sitemap mode only — crawl-mode requests carry
+        // no sitemapLastmod). HTTP Last-Modified deliberately stays out.
+        const sitemapLastmod =
+          typeof request.userData.sitemapLastmod === "string"
+            ? request.userData.sitemapLastmod
+            : null;
+        const dates = resolvePageDates({
+          metadata: enrichment.metadata,
+          sitemapLastmod,
+        });
+        // The raw value of every date signal stays inspectable on metadata —
+        // the other sources live in their enricher namespaces already; the
+        // sitemap lastmod arrives via userData, so it's attached here.
+        const metadata = sitemapLastmod
+          ? { ...(enrichment.metadata ?? {}), sitemap: { lastmod: sitemapLastmod } }
+          : enrichment.metadata;
         okCount += 1;
         await input.onPage?.({
           url,
@@ -597,10 +643,14 @@ export async function runCrawl(input: CrawlRunnerInput): Promise<CrawlOutcome> {
           rawText: extracted.markdown,
           etag: responseHeaders.etag ?? null,
           lastModified: responseHeaders["last-modified"] ?? null,
+          publishedAt: dates.publishedAt,
+          modifiedAt: dates.modifiedAt,
+          dateSources: dates.dateSources,
+          fetchedAt: new Date().toISOString(),
           fileLinks: extractFileLinks($, url, input.seedUrl, {
             includeTabular: input.includeTabularFileLinks === true,
           }),
-          metadata: enrichment.metadata,
+          metadata,
           extraChunks: enrichment.extraChunks.length > 0 ? enrichment.extraChunks : undefined,
           detectedPlatforms: detectedPlatforms.length > 0 ? detectedPlatforms : undefined,
         });
@@ -693,25 +743,33 @@ export async function runCrawl(input: CrawlRunnerInput): Promise<CrawlOutcome> {
       // indexer's run-prep stage). We don't fall back to fetching here
       // because failures need to be surfaced to the crawl run, not
       // silently absorbed by the worker.
-      const urls = input.sitemapUrls ?? [];
+      const entries = (input.sitemapUrls ?? []).map((e) =>
+        typeof e === "string"
+          ? { url: e, lastmod: null }
+          : { url: e.url, lastmod: e.lastmod ?? null },
+      );
       // A seed pointing at the sitemap document itself scopes to the site
       // root (sitemap part stripped) — page URLs never live under the
       // sitemap's own path, so seed-prefix scope would filter out every entry.
       const scopeSeed = sitemapSeedScopeUrl(input.seedUrl, input.sitemapDiscoveredLocations);
-      const scopedUrls = urls.filter((u) => isInSeedScope(scopeSeed, u) && !isNonHtmlUrl(u));
-      const robotAllowedUrls: string[] = [];
-      for (const u of scopedUrls) {
-        if (robots && !robots.allows(u)) {
-          noteSkippedRobots(u);
-          await notifySkippedRobots(u);
+      const scopedEntries = entries.filter(
+        (e) => isInSeedScope(scopeSeed, e.url) && !isNonHtmlUrl(e.url),
+      );
+      const robotAllowedEntries: typeof entries = [];
+      for (const e of scopedEntries) {
+        if (robots && !robots.allows(e.url)) {
+          noteSkippedRobots(e.url);
+          await notifySkippedRobots(e.url);
         } else {
-          robotAllowedUrls.push(u);
+          robotAllowedEntries.push(e);
         }
       }
       const toQueue = skipUrls?.size
-        ? robotAllowedUrls.filter((u) => !skipUrls.has(u))
-        : robotAllowedUrls;
-      await crawler.addRequests(toQueue);
+        ? robotAllowedEntries.filter((e) => !skipUrls.has(e.url))
+        : robotAllowedEntries;
+      await crawler.addRequests(
+        toQueue.map((e) => ({ url: e.url, userData: { sitemapLastmod: e.lastmod } })),
+      );
     } else {
       // Crawl mode: just the seed URL at depth=0. Crawlee enqueues its
       // out-links subject to the source's depth setting.
