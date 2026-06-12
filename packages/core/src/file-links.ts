@@ -15,6 +15,28 @@ const EXTENSION_TO_MIME: Record<string, string> = {
   ".md": "text/markdown",
 };
 
+/**
+ * Tabular data files, reported as FileLinks only when the caller opts in
+ * (`includeTabular`) — existing consumers see no new link kinds without
+ * asking. The consumer decides whether (and how) to ingest them. Legacy .xls
+ * is deliberately absent — rare enough to wait for a real ask.
+ */
+const TABULAR_EXTENSION_TO_MIME: Record<string, string> = {
+  ".csv": "text/csv",
+  ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+};
+
+export type FileLinkOptions = {
+  /** Also report tabular files (csv/xlsx) as FileLinks. Default false. */
+  includeTabular?: boolean;
+};
+
+function mimeForExtension(ext: string, opts?: FileLinkOptions): string | null {
+  return (
+    EXTENSION_TO_MIME[ext] ?? (opts?.includeTabular ? TABULAR_EXTENSION_TO_MIME[ext] : null) ?? null
+  );
+}
+
 export const FILE_EXCLUDE_GLOBS = [
   ...Object.keys(EXTENSION_TO_MIME).map((ext) => `**/*${ext}`),
   "**/webdav/files/**/*.htm",
@@ -23,6 +45,7 @@ export const FILE_EXCLUDE_GLOBS = [
 
 const NON_HTML_EXTENSIONS = new Set([
   ...Object.keys(EXTENSION_TO_MIME),
+  ...Object.keys(TABULAR_EXTENSION_TO_MIME),
   // Images
   ".avif",
   ".bmp",
@@ -59,8 +82,7 @@ const NON_HTML_EXTENSIONS = new Set([
   ".rar",
   ".tar",
   ".zip",
-  // Data / config
-  ".csv",
+  // Data / config (.csv is covered by TABULAR_EXTENSION_TO_MIME above)
   ".json",
   ".tsv",
   ".xml",
@@ -76,7 +98,6 @@ const NON_HTML_EXTENSIONS = new Set([
   ".pptx",
   ".rtf",
   ".xls",
-  ".xlsx",
   // Fonts
   ".eot",
   ".otf",
@@ -96,11 +117,16 @@ const NON_HTML_EXTENSIONS = new Set([
 
 /**
  * Build a `FileLink` for a single URL when its extension maps to a
- * supported document type (PDF/DOCX/TXT/MD), else null. Used by the feed
- * runner to route an entry's non-HTML link target through the same
- * crawled-file ingest path as web crawls.
+ * supported file type (PDF/DOCX/TXT/MD documents; CSV/XLSX tabular data when
+ * `includeTabular` is set), else null. Used by the feed runner to route an
+ * entry's non-HTML link target through the same crawled-file ingest path as
+ * web crawls.
  */
-export function fileLinkForUrl(url: string, anchorText?: string): FileLink | null {
+export function fileLinkForUrl(
+  url: string,
+  anchorText?: string,
+  opts?: FileLinkOptions,
+): FileLink | null {
   let pathname: string;
   try {
     pathname = new URL(url).pathname.toLowerCase();
@@ -109,7 +135,7 @@ export function fileLinkForUrl(url: string, anchorText?: string): FileLink | nul
   }
   const ext = pathname.match(/\.[a-z0-9]+$/)?.[0];
   if (!ext) return null;
-  const mime = EXTENSION_TO_MIME[ext];
+  const mime = mimeForExtension(ext, opts);
   if (!mime) return null;
   return { url, anchorText: anchorText?.trim() || filenameFromUrl(url), mimeType: mime };
 }
@@ -138,7 +164,12 @@ function isWebdavDocumentExportPath(pathname: string): boolean {
  * NOT seed-path scoped, because files typically live under a different path
  * hierarchy than the HTML pages (e.g. `/download/`, `/dokument/`, `/media/`).
  */
-export function extractFileLinks($: CheerioAPI, pageUrl: string, seedUrl: string): FileLink[] {
+export function extractFileLinks(
+  $: CheerioAPI,
+  pageUrl: string,
+  seedUrl: string,
+  opts?: FileLinkOptions,
+): FileLink[] {
   const seen = new Set<string>();
   const links: FileLink[] = [];
 
@@ -168,7 +199,7 @@ export function extractFileLinks($: CheerioAPI, pageUrl: string, seedUrl: string
     const ext = pathname.match(/\.[a-z0-9]+$/)?.[0];
     if (!ext) return;
 
-    const mime = EXTENSION_TO_MIME[ext];
+    const mime = mimeForExtension(ext, opts);
     if (!mime) return;
 
     const normalized = resolved.href;

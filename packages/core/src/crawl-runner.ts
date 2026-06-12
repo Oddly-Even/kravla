@@ -177,6 +177,13 @@ export type CrawlRunnerInput = {
    */
   indexLinkedFiles?: boolean;
   /**
+   * Also report linked tabular files (csv/xlsx) in `fileLinks`. Default
+   * false so existing consumers see no new link kinds without opting in —
+   * what the consumer does with them (ingest as datasets, count, ignore) is
+   * its own decision.
+   */
+  includeTabularFileLinks?: boolean;
+  /**
    * Display name attached to harvested e-services (`open_eplatform` only;
    * other crawl types ignore it). The crawler has no municipality registry —
    * the caller derives the name from the seed URL however it likes.
@@ -590,7 +597,9 @@ export async function runCrawl(input: CrawlRunnerInput): Promise<CrawlOutcome> {
           rawText: extracted.markdown,
           etag: responseHeaders.etag ?? null,
           lastModified: responseHeaders["last-modified"] ?? null,
-          fileLinks: extractFileLinks($, url, input.seedUrl),
+          fileLinks: extractFileLinks($, url, input.seedUrl, {
+            includeTabular: input.includeTabularFileLinks === true,
+          }),
           metadata: enrichment.metadata,
           extraChunks: enrichment.extraChunks.length > 0 ? enrichment.extraChunks : undefined,
           detectedPlatforms: detectedPlatforms.length > 0 ? detectedPlatforms : undefined,
