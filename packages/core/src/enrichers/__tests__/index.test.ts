@@ -9,7 +9,7 @@ describe("runEnrichers", () => {
     expect(r.extraChunks).toEqual([]);
   });
 
-  it("merges head-meta + json-ld + sitevision output without collisions", () => {
+  it("merges head-meta + json-ld + sitevision + time-elements output without collisions", () => {
     const html = `
       <html><head>
         <link rel="canonical" href="https://muni.se/articles/x">
@@ -22,6 +22,9 @@ describe("runEnrichers", () => {
           ],
         })}</script>
       </head><body>
+        <article>
+          <p>Senast uppdaterad: <time datetime="2026-05-25">25 maj 2026</time></p>
+        </article>
         <section class="sv-related-portlet"><a href="/related-1">related</a></section>
         <div class="contact" data-cid="c">
           <p class="contact-title">TELEFON</p>
@@ -34,6 +37,7 @@ describe("runEnrichers", () => {
       article: { publishedAt: "2026-05-20T00:00:00Z" },
       jsonLd: { breadcrumbs: ["Hem", "Nyheter"] },
       sitevision: { relatedUrls: ["https://muni.se/related-1"] },
+      time: { modifiedAt: "2026-05-25" },
     });
     expect(r.extraChunks).toContain("Contact telefon: 0589-870 00");
   });

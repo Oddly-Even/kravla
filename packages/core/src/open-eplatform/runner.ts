@@ -194,6 +194,11 @@ export async function runOpenEplatformCrawl(
       // skips re-embedding when nothing changed.
       etag: null,
       lastModified: null,
+      // The catalog carries no per-service date signal.
+      publishedAt: null,
+      modifiedAt: null,
+      dateSources: null,
+      fetchedAt: new Date().toISOString(),
       // No in-page document links to discover — services are self-contained
       // flows, not link hubs. Empty array keeps shape parity with the
       // generic runner so the streaming dispatcher doesn't special-case us.

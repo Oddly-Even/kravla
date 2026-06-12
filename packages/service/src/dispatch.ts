@@ -123,7 +123,12 @@ export async function runCrawlJob(args: {
         }
         outcome = await runCrawl({
           ...input,
-          sitemapUrls: sitemap.entries.map((e) => e.url),
+          // Carry each entry's <lastmod> so it can feed the page's
+          // normalized `modified_at` (lowest-priority signal).
+          sitemapUrls: sitemap.entries.map((e) => ({
+            url: e.url,
+            lastmod: e.lastmod ? e.lastmod.toISOString() : null,
+          })),
           sitemapDiscoveredLocations: sitemap.discoveredLocations,
         });
         break;
