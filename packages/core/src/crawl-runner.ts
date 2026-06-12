@@ -615,13 +615,20 @@ export async function runCrawl(input: CrawlRunnerInput): Promise<CrawlOutcome> {
         // Normalized content dates from the enriched metadata + the sitemap
         // entry's <lastmod> (sitemap mode only — crawl-mode requests carry
         // no sitemapLastmod). HTTP Last-Modified deliberately stays out.
+        const sitemapLastmod =
+          typeof request.userData.sitemapLastmod === "string"
+            ? request.userData.sitemapLastmod
+            : null;
         const dates = resolvePageDates({
           metadata: enrichment.metadata,
-          sitemapLastmod:
-            typeof request.userData.sitemapLastmod === "string"
-              ? request.userData.sitemapLastmod
-              : null,
+          sitemapLastmod,
         });
+        // The raw value of every date signal stays inspectable on metadata —
+        // the other sources live in their enricher namespaces already; the
+        // sitemap lastmod arrives via userData, so it's attached here.
+        const metadata = sitemapLastmod
+          ? { ...(enrichment.metadata ?? {}), sitemap: { lastmod: sitemapLastmod } }
+          : enrichment.metadata;
         okCount += 1;
         await input.onPage?.({
           url,
@@ -634,7 +641,7 @@ export async function runCrawl(input: CrawlRunnerInput): Promise<CrawlOutcome> {
           dateSources: dates.dateSources,
           fetchedAt: new Date().toISOString(),
           fileLinks: extractFileLinks($, url, input.seedUrl),
-          metadata: enrichment.metadata,
+          metadata,
           extraChunks: enrichment.extraChunks.length > 0 ? enrichment.extraChunks : undefined,
           detectedPlatforms: detectedPlatforms.length > 0 ? detectedPlatforms : undefined,
         });

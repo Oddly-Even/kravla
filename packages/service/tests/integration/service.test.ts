@@ -266,14 +266,19 @@ describe("stream mode", () => {
         url: string;
         modified_at: string | null;
         date_sources: Record<string, string> | null;
+        metadata: Record<string, unknown> | null;
       };
     }[];
     const pageA = pages.find((p) => p.page.url === `${fixtures.url}/a`)!.page;
     expect(pageA.modified_at).toBe("2026-05-10T00:00:00.000Z");
     expect(pageA.date_sources).toEqual({ modified_at: "sitemap-lastmod" });
+    // The raw lastmod stays inspectable on metadata alongside the other
+    // per-source raw values, independent of which source won the cascade.
+    expect(pageA.metadata?.sitemap).toEqual({ lastmod: "2026-05-10T00:00:00.000Z" });
     const pageB = pages.find((p) => p.page.url === `${fixtures.url}/b`)!.page;
     expect(pageB.modified_at).toBeNull();
     expect(pageB.date_sources).toBeNull();
+    expect(pageB.metadata?.sitemap).toBeUndefined();
   });
 
   it("treats conditional-GET 304s as unchanged events", async () => {
