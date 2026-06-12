@@ -73,6 +73,7 @@ async function buildPage(
   feedUrl: string,
   feedTitle: string | null,
   indexLinkedFiles: boolean,
+  includeTabularFileLinks: boolean,
   userAgent: string,
 ): Promise<CrawlPage> {
   const metadata: FeedEntryMetadata = {
@@ -92,7 +93,9 @@ async function buildPage(
   const fileLinks: FileLink[] = [];
   if (item.link && indexLinkedFiles) {
     if (isNonHtmlUrl(item.link)) {
-      const fl = fileLinkForUrl(item.link, item.title ?? undefined);
+      const fl = fileLinkForUrl(item.link, item.title ?? undefined, {
+        includeTabular: includeTabularFileLinks,
+      });
       if (fl) fileLinks.push(fl);
     } else {
       const article = await fetchArticleText(item.link, userAgent);
@@ -148,6 +151,7 @@ export async function runFeedAsStreaming(input: CrawlRunnerInput): Promise<Crawl
       input.seedUrl,
       parsed.feedTitle,
       Boolean(input.indexLinkedFiles),
+      input.includeTabularFileLinks === true,
       userAgent,
     );
     await input.onPage?.(page);
